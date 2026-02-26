@@ -72,10 +72,30 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 }}
               >
                 <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                  Chatbot
+                  🌙 Dream Log
                 </span>
               </Link>
               <div className="flex flex-row gap-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      asChild
+                      className="h-8 p-1 md:h-fit md:p-2"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setOpenMobile(false)}
+                      >
+                        <span className="text-sm">📊</span>
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent align="end" className="hidden md:block">
+                    Dashboard
+                  </TooltipContent>
+                </Tooltip>
                 {user && (
                   <Tooltip>
                     <TooltipTrigger asChild>

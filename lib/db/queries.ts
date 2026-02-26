@@ -23,13 +23,18 @@ import {
   chat,
   type DBMessage,
   document,
+  dreamEntry,
   message,
   type Suggestion,
   stream,
   suggestion,
   type User,
   user,
+  userBadge,
+  type UserStreak,
+  userStreak,
   vote,
+  sleepData,
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 
@@ -598,5 +603,288 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
       "bad_request:database",
       "Failed to get stream ids by chat id"
     );
+  }
+}
+
+export async function saveSleepData({
+  userId,
+  source,
+  sleepStart,
+  sleepEnd,
+  durationMinutes,
+  qualityScore,
+  heartRateAvg,
+  activityData,
+}: {
+  userId: string;
+  source: string;
+  sleepStart: Date;
+  sleepEnd: Date;
+  durationMinutes?: number;
+  qualityScore?: number;
+  heartRateAvg?: number;
+  activityData?: Record<string, unknown>;
+}) {
+  try {
+    return await db
+      .insert(sleepData)
+      .values({
+        userId,
+        source,
+        sleepStart,
+        sleepEnd,
+        durationMinutes,
+        qualityScore,
+        heartRateAvg,
+        activityData,
+        createdAt: new Date(),
+      })
+      .returning();
+  } catch (_error) {
+    throw new ChatbotError("bad_request:database", "Failed to save sleep data");
+  }
+}
+
+export async function getSleepDataByUserId({
+  userId,
+  limit = 30,
+}: {
+  userId: string;
+  limit?: number;
+}) {
+  try {
+    return await db
+      .select()
+      .from(sleepData)
+      .where(eq(sleepData.userId, userId))
+      .orderBy(desc(sleepData.sleepStart))
+      .limit(limit);
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get sleep data by user id"
+    );
+  }
+}
+
+export async function saveDreamEntry({
+  userId,
+  title,
+  content,
+  chatId,
+  sleepDataId,
+  mood,
+  tags,
+  isLucid,
+  isShared,
+  shareToken,
+}: {
+  userId: string;
+  title: string;
+  content: string;
+  chatId?: string;
+  sleepDataId?: string;
+  mood?: string;
+  tags?: string[];
+  isLucid?: boolean;
+  isShared?: boolean;
+  shareToken?: string;
+}) {
+  try {
+    return await db
+      .insert(dreamEntry)
+      .values({
+        userId,
+        title,
+        content,
+        chatId,
+        sleepDataId,
+        mood,
+        tags,
+        isLucid: isLucid ?? false,
+        isShared: isShared ?? false,
+        shareToken,
+        createdAt: new Date(),
+      })
+      .returning();
+  } catch (_error) {
+    throw new ChatbotError("bad_request:database", "Failed to save dream entry");
+  }
+}
+
+export async function getDreamEntriesByUserId({
+  userId,
+  limit = 30,
+}: {
+  userId: string;
+  limit?: number;
+}) {
+  try {
+    return await db
+      .select()
+      .from(dreamEntry)
+      .where(eq(dreamEntry.userId, userId))
+      .orderBy(desc(dreamEntry.createdAt))
+      .limit(limit);
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get dream entries by user id"
+    );
+  }
+}
+
+export async function getDreamEntryByShareToken({
+  shareToken,
+}: {
+  shareToken: string;
+}) {
+  try {
+    const [entry] = await db
+      .select()
+      .from(dreamEntry)
+      .where(eq(dreamEntry.shareToken, shareToken));
+    return entry ?? null;
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get dream entry by share token"
+    );
+  }
+}
+
+export async function getOrCreateUserStreak({
+  userId,
+}: {
+  userId: string;
+}): Promise<UserStreak> {
+  try {
+    const [existing] = await db
+      .select()
+      .from(userStreak)
+      .where(eq(userStreak.userId, userId));
+
+    if (existing) {
+      return existing;
+    }
+
+    const [created] = await db
+      .insert(userStreak)
+      .values({
+        userId,
+        currentStreak: 0,
+        longestStreak: 0,
+        totalEntries: 0,
+        updatedAt: new Date(),
+      })
+      .returning();
+
+    return created;
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get or create user streak"
+    );
+  }
+}
+
+export async function updateUserStreak({
+  userId,
+}: {
+  userId: string;
+}) {
+  try {
+    const streak = await getOrCreateUserStreak({ userId });
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const lastLog = streak.lastLogDate
+      ? new Date(
+          streak.lastLogDate.getFullYear(),
+          streak.lastLogDate.getMonth(),
+          streak.lastLogDate.getDate()
+        )
+      : null;
+
+    let newCurrent = streak.currentStreak;
+    const newTotal = streak.totalEntries + 1;
+
+    if (!lastLog) {
+      newCurrent = 1;
+    } else {
+      const diffDays = Math.round(
+        (today.getTime() - lastLog.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (diffDays === 1) {
+        newCurrent += 1;
+      } else if (diffDays > 1) {
+        newCurrent = 1;
+      }
+    }
+
+    const newLongest = Math.max(newCurrent, streak.longestStreak);
+
+    const [updated] = await db
+      .update(userStreak)
+      .set({
+        currentStreak: newCurrent,
+        longestStreak: newLongest,
+        lastLogDate: now,
+        totalEntries: newTotal,
+        updatedAt: now,
+      })
+      .where(eq(userStreak.userId, userId))
+      .returning();
+
+    return updated;
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to update user streak"
+    );
+  }
+}
+
+export async function getUserBadges({ userId }: { userId: string }) {
+  try {
+    return await db
+      .select()
+      .from(userBadge)
+      .where(eq(userBadge.userId, userId))
+      .orderBy(desc(userBadge.earnedAt));
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get user badges"
+    );
+  }
+}
+
+export async function awardBadge({
+  userId,
+  badgeType,
+}: {
+  userId: string;
+  badgeType: string;
+}) {
+  try {
+    const existing = await db
+      .select()
+      .from(userBadge)
+      .where(
+        and(eq(userBadge.userId, userId), eq(userBadge.badgeType, badgeType))
+      );
+
+    if (existing.length > 0) {
+      return existing[0];
+    }
+
+    const [badge] = await db
+      .insert(userBadge)
+      .values({ userId, badgeType, earnedAt: new Date() })
+      .returning();
+
+    return badge;
+  } catch (_error) {
+    throw new ChatbotError("bad_request:database", "Failed to award badge");
   }
 }
