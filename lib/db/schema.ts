@@ -2,9 +2,11 @@ import type { InferSelectModel } from "drizzle-orm";
 import {
   boolean,
   foreignKey,
+  integer,
   json,
   pgTable,
   primaryKey,
+  real,
   text,
   timestamp,
   uuid,
@@ -168,3 +170,70 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const sleepData = pgTable("SleepData", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
+  source: varchar("source", { length: 64 }).notNull().default("manual"),
+  sleepStart: timestamp("sleepStart").notNull(),
+  sleepEnd: timestamp("sleepEnd").notNull(),
+  durationMinutes: integer("durationMinutes"),
+  qualityScore: real("qualityScore"),
+  heartRateAvg: integer("heartRateAvg"),
+  activityData: json("activityData"),
+  createdAt: timestamp("createdAt").notNull(),
+});
+
+export type SleepData = InferSelectModel<typeof sleepData>;
+
+export const dreamEntry = pgTable("DreamEntry", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
+  chatId: uuid("chatId").references(() => chat.id),
+  sleepDataId: uuid("sleepDataId").references(() => sleepData.id),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  mood: varchar("mood", { length: 32 }),
+  tags: json("tags"),
+  isShared: boolean("isShared").notNull().default(false),
+  shareToken: varchar("shareToken", { length: 64 }),
+  isLucid: boolean("isLucid").notNull().default(false),
+  createdAt: timestamp("createdAt").notNull(),
+});
+
+export type DreamEntry = InferSelectModel<typeof dreamEntry>;
+
+export const userStreak = pgTable("UserStreak", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
+  currentStreak: integer("currentStreak").notNull().default(0),
+  longestStreak: integer("longestStreak").notNull().default(0),
+  lastLogDate: timestamp("lastLogDate"),
+  totalEntries: integer("totalEntries").notNull().default(0),
+  updatedAt: timestamp("updatedAt").notNull(),
+});
+
+export type UserStreak = InferSelectModel<typeof userStreak>;
+
+export const userBadge = pgTable(
+  "UserBadge",
+  {
+    id: uuid("id").notNull().defaultRandom(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => user.id),
+    badgeType: varchar("badgeType", { length: 64 }).notNull(),
+    earnedAt: timestamp("earnedAt").notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.id] }),
+  })
+);
+
+export type UserBadge = InferSelectModel<typeof userBadge>;
