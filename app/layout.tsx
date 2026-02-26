@@ -7,9 +7,10 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Next.js Chatbot Template",
-  description: "Next.js chatbot template using the AI SDK.",
+  metadataBase: new URL("https://dreamlogapp.com"),
+  title: "Dream Log App – Private AI Dream Journal",
+  description:
+    "Log and analyze your dreams privately with AI assistance, relaxation features, and speech-to-text dictation.",
 };
 
 export const viewport = {

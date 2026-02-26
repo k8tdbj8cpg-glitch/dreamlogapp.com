@@ -33,6 +33,7 @@ import {
   modelsByProvider,
 } from "@/lib/ai/models";
 import type { Attachment, ChatMessage } from "@/lib/types";
+import { useSpeechToText } from "@/hooks/use-speech-to-text";
 import { cn } from "@/lib/utils";
 import {
   PromptInput,
@@ -41,7 +42,7 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from "./elements/prompt-input";
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons";
+import { ArrowUpIcon, MicIcon, PaperclipIcon, StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
 import { SuggestedActions } from "./suggested-actions";
 import { Button } from "./ui/button";
@@ -86,6 +87,11 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+
+  const { isListening, isSupported, startListening, stopListening } =
+    useSpeechToText((transcript) => {
+      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    });
 
   const adjustHeight = useCallback(() => {
     if (textareaRef.current) {
@@ -371,7 +377,7 @@ function PureMultimodalInput({
             maxHeight={200}
             minHeight={44}
             onChange={handleInput}
-            placeholder="Send a message..."
+            placeholder="Describe your dream or ask for help..."
             ref={textareaRef}
             rows={1}
             value={input}
@@ -384,6 +390,14 @@ function PureMultimodalInput({
               selectedModelId={selectedModelId}
               status={status}
             />
+            {isSupported && (
+              <SpeechButton
+                isListening={isListening}
+                onStart={startListening}
+                onStop={stopListening}
+                status={status}
+              />
+            )}
             <ModelSelectorCompact
               onModelChange={onModelChange}
               selectedModelId={selectedModelId}
@@ -556,3 +570,42 @@ function PureStopButton({
 }
 
 const StopButton = memo(PureStopButton);
+
+function PureSpeechButton({
+  isListening,
+  onStart,
+  onStop,
+  status,
+}: {
+  isListening: boolean;
+  onStart: () => void;
+  onStop: () => void;
+  status: UseChatHelpers<ChatMessage>["status"];
+}) {
+  return (
+    <Button
+      aria-label={isListening ? "Stop recording" : "Start voice dictation"}
+      className={cn(
+        "aspect-square h-8 rounded-lg p-1 transition-colors",
+        isListening
+          ? "bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
+          : "hover:bg-accent"
+      )}
+      data-testid="speech-button"
+      disabled={status !== "ready"}
+      onClick={(event) => {
+        event.preventDefault();
+        if (isListening) {
+          onStop();
+        } else {
+          onStart();
+        }
+      }}
+      variant="ghost"
+    >
+      <MicIcon size={14} />
+    </Button>
+  );
+}
+
+const SpeechButton = memo(PureSpeechButton);

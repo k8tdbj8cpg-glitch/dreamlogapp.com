@@ -72,7 +72,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 }}
               >
                 <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                  Chatbot
+                  🌙 Dream Log
                 </span>
               </Link>
               <div className="flex flex-row gap-1">
@@ -119,7 +119,26 @@ export function AppSidebar({ user }: { user: User | undefined }) {
         <SidebarContent>
           <SidebarHistory user={user} />
         </SidebarContent>
-        <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
+        <SidebarFooter>
+          <nav className="mb-1 flex flex-col gap-0.5 px-2">
+            {[
+              { href: "/relaxation", label: "🛌 Relaxation" },
+              { href: "/voice-assistant", label: "🎙️ Voice Assistant" },
+              { href: "/pricing", label: "💳 Pricing" },
+              { href: "/privacy", label: "🔐 Privacy" },
+            ].map(({ href, label }) => (
+              <Link
+                className="rounded-md px-2 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
+                href={href}
+                key={href}
+                onClick={() => setOpenMobile(false)}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+          {user && <SidebarUserNav user={user} />}
+        </SidebarFooter>
       </Sidebar>
 
       <AlertDialog
