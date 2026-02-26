@@ -21,6 +21,7 @@ import { MessageActions } from "./message-actions";
 import { MessageEditor } from "./message-editor";
 import { MessageReasoning } from "./message-reasoning";
 import { PreviewAttachment } from "./preview-attachment";
+import { SleepCharts } from "./sleep-charts";
 import { Weather } from "./weather";
 
 const PurePreviewMessage = ({
@@ -254,6 +255,31 @@ const PurePreviewMessage = ({
                             Allow
                           </button>
                         </div>
+                      )}
+                    </ToolContent>
+                  </Tool>
+                </div>
+              );
+            }
+
+            if (type === "tool-getSleepCharts") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                return (
+                  <div className="w-full" key={toolCallId}>
+                    <SleepCharts data={part.output} />
+                  </div>
+                );
+              }
+
+              return (
+                <div className="w-full" key={toolCallId}>
+                  <Tool className="w-full" defaultOpen={true}>
+                    <ToolHeader state={state} type="tool-getSleepCharts" />
+                    <ToolContent>
+                      {state === "input-available" && (
+                        <ToolInput input={part.input} />
                       )}
                     </ToolContent>
                   </Tool>

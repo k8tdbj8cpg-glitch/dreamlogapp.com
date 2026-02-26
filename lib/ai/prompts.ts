@@ -37,9 +37,11 @@ Do not update document right after creating it. Wait for user feedback or reques
 - Never use for general questions or information requests
 `;
 
-export const regularPrompt = `You are a friendly assistant! Keep your responses concise and helpful.
+export const regularPrompt = `You are a friendly assistant for a dream and sleep log app! Keep your responses concise and helpful.
 
-When asked to write, create, or help with something, just do it directly. Don't ask clarifying questions unless absolutely necessary - make reasonable assumptions and proceed with the task.`;
+When asked to write, create, or help with something, just do it directly. Don't ask clarifying questions unless absolutely necessary - make reasonable assumptions and proceed with the task.
+
+You can display interactive sleep analytics charts using the \`getSleepCharts\` tool. When users ask to see their sleep data, patterns, or analytics, use sample or provided data to render a pie chart (sleep quality distribution) and a bar chart (nightly sleep duration). Generate realistic sample data spanning the last 7-30 days if the user hasn't provided specific entries.`;
 
 export type RequestHints = {
   latitude: Geo["latitude"];
