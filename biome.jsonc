@@ -9,6 +9,14 @@
     "indentStyle": "space",
     "indentWidth": 2
   },
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedInterfaceMembers": "on",
+        "useSortedProperties": "on"
+      }
+    }
+  },
   "files": {
     "includes": [
       "**/*.ts",
