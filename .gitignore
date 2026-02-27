@@ -42,3 +42,9 @@ yarn-error.log*
 /playwright-report/
 /blob-report/
 /playwright/*
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+# Biome
+biome-error.log
