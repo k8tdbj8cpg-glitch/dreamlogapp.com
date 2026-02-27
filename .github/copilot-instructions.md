@@ -38,7 +38,7 @@ tests/          # Playwright end-to-end tests
 - Use **TypeScript** for all files (`.ts`, `.tsx`).
 - Follow the **Biome** linter and formatter rules. Run `pnpm run lint` to check and `pnpm run format` to auto-fix.
 - File names must use **kebab-case** (enforced by Biome).
-- Prefer `interface` over `type` for object shapes where possible.
+- For object shapes, follow the existing style in each file (this codebase commonly uses `type` aliases as well as `interface`).
 - Use `import type` for type-only imports.
 - Use **named exports** — avoid default exports except in Next.js pages/layouts/route handlers (which require them).
 - Avoid `any` types; use proper TypeScript types.
