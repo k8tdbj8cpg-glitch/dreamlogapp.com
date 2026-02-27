@@ -54,9 +54,9 @@ You can deploy your own version of Chatbot to Vercel with one click:
 
 ## Running locally
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+You will need to use the environment variables [defined in `.env.example`](.env.example) to run Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env.local` file is all that is necessary.
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
+> Note: You should not commit your `.env.local` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts. The `.gitignore` already excludes `.env.local` to prevent accidental commits.
 
 1. Install Vercel CLI: `npm i -g vercel`
 2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
@@ -69,3 +69,31 @@ pnpm dev
 ```
 
 Your app template should now be running on [localhost:3000](http://localhost:3000).
+
+## Environment Variables
+
+### Local Development
+
+Copy `.env.example` to `.env.local` and fill in the values:
+
+```bash
+cp .env.example .env.local
+```
+
+Generate a secure `AUTH_SECRET` value for local development:
+
+```bash
+openssl rand -base64 32
+```
+
+### Production (Vercel)
+
+Set the following environment variables in your [Vercel project settings](https://vercel.com/docs/projects/environment-variables):
+
+- `AUTH_SECRET` — A random secret used to sign and encrypt auth tokens. Generate one with `openssl rand -base64 32`.
+- `POSTGRES_URL` — Your PostgreSQL connection string.
+- `REDIS_URL` — Your Redis connection string.
+- `BLOB_READ_WRITE_TOKEN` — Your Vercel Blob storage token.
+- `AI_GATEWAY_API_KEY` — Required for non-Vercel deployments; omit or leave unset for Vercel deployments, which authenticate via OIDC tokens automatically.
+
+Never hardcode secrets in source files. Always inject them through environment variables.
