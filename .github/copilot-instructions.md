@@ -7,7 +7,7 @@ This is **dreamlogapp.com** — a Next.js chatbot application built with the [AI
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router, React Server Components, Server Actions)
-- **AI**: [Vercel AI SDK](https://ai-sdk.dev/) with [AI Gateway](https://vercel.com/docs/ai-gateway) (default models: `grok-2-vision-1212`, `grok-3-mini`)
+- **AI**: [Vercel AI SDK](https://ai-sdk.dev/) with [AI Gateway](https://vercel.com/docs/ai-gateway) (default model: `google/gemini-2.5-flash-lite`)
 - **Database**: Drizzle ORM with Neon Serverless Postgres
 - **Auth**: NextAuth v5 (next-auth@5 beta)
 - **Storage**: Vercel Blob
