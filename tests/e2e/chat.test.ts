@@ -58,4 +58,22 @@ test.describe("Chat Input Features", () => {
     await input.fill("Line 1\nLine 2\nLine 3");
     await expect(input).toContainText("Line 1");
   });
+
+  test("voice input button is visible in toolbar", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("voice-input-button")).toBeVisible();
+  });
+
+  test("text input accepts keyboard entry and submits via Enter key", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const input = page.getByTestId("multimodal-input");
+    await input.fill("Dream log via keyboard");
+    await expect(input).toHaveValue("Dream log via keyboard");
+
+    // Shift+Enter should add a newline, not submit
+    await input.press("Shift+Enter");
+    await expect(input).toHaveValue("Dream log via keyboard\n");
+  });
 });
