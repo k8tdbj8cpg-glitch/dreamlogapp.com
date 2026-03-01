@@ -3,14 +3,16 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AppProvider } from "@/lib/context/app-context";
 
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Next.js Chatbot Template",
-  description: "Next.js chatbot template using the AI SDK.",
+  metadataBase: new URL("https://dreamlogapp.com"),
+  title: "DreamLog — AI Dream Journal",
+  description:
+    "Record, explore, and understand your dreams with the help of AI. DreamLog is your personal AI-powered dream journal.",
 };
 
 export const viewport = {
@@ -79,8 +81,10 @@ export default function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          <Toaster position="top-center" />
-          <SessionProvider>{children}</SessionProvider>
+          <AppProvider>
+            <Toaster position="top-center" />
+            <SessionProvider>{children}</SessionProvider>
+          </AppProvider>
         </ThemeProvider>
         <Analytics />
       </body>
