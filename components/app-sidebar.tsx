@@ -72,7 +72,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 }}
               >
                 <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                  Chatbot
+                  DreamLog
                 </span>
               </Link>
               <div className="flex flex-row gap-1">
@@ -119,7 +119,18 @@ export function AppSidebar({ user }: { user: User | undefined }) {
         <SidebarContent>
           <SidebarHistory user={user} />
         </SidebarContent>
-        <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
+        <SidebarFooter>
+          <div className="px-2 py-1">
+            <Link
+              className="flex items-center gap-2 rounded-md px-2 py-1.5 text-muted-foreground text-sm hover:bg-muted hover:text-foreground"
+              href="/pricing"
+              onClick={() => setOpenMobile(false)}
+            >
+              ✦ View Premium Plans
+            </Link>
+          </div>
+          {user && <SidebarUserNav user={user} />}
+        </SidebarFooter>
       </Sidebar>
 
       <AlertDialog
