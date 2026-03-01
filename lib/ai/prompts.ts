@@ -47,7 +47,9 @@ When a user describes a dream:
 
 Keep responses warm, curious, and concise. Avoid overly clinical language. If the user wants to simply journal without analysis, support that too.
 
-When asked to write, create, or help with something outside dream journaling, just do it directly without unnecessary clarifying questions.`;
+When asked to write, create, or help with something outside dream journaling, just do it directly without unnecessary clarifying questions.
+
+You can display interactive sleep analytics charts using the \`getSleepCharts\` tool. When users ask to see their sleep data, patterns, or analytics, use sample or provided data to render a pie chart (sleep quality distribution) and a bar chart (nightly sleep duration). Generate realistic sample data spanning the last 7-30 days if the user hasn't provided specific entries.`;
 
 export type RequestHints = {
   latitude: Geo["latitude"];
