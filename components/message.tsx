@@ -1,12 +1,14 @@
 "use client";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { useState } from "react";
+import type { HueLight } from "@/lib/hue/types";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
 import { cn, sanitizeText } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
 import { DocumentToolResult } from "./document";
 import { DocumentPreview } from "./document-preview";
+import { HueLightControl, HueLights } from "./hue-lights";
 import { MessageContent } from "./elements/message";
 import { Response } from "./elements/response";
 import {
@@ -339,6 +341,51 @@ const PurePreviewMessage = ({
                     )}
                   </ToolContent>
                 </Tool>
+              );
+            }
+
+            if (type === "tool-controlHueLights") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as
+                  | HueLight[]
+                  | { success?: boolean; error?: string; lightId?: string };
+
+                if (Array.isArray(output)) {
+                  return (
+                    <div className="w-[min(100%,450px)]" key={toolCallId}>
+                      <HueLights lights={output} />
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="w-[min(100%,450px)]" key={toolCallId}>
+                    <HueLightControl
+                      action={part.input?.action ?? "set"}
+                      lightId={part.input?.lightId ?? ""}
+                      result={output as { success?: boolean; error?: string }}
+                    />
+                  </div>
+                );
+              }
+
+              return (
+                <div className="w-[min(100%,450px)]" key={toolCallId}>
+                  <Tool className="w-full" defaultOpen={true}>
+                    <ToolHeader
+                      state={state}
+                      type="tool-controlHueLights"
+                    />
+                    <ToolContent>
+                      {(state === "input-available" ||
+                        state === "input-streaming") && (
+                        <ToolInput input={part.input} />
+                      )}
+                    </ToolContent>
+                  </Tool>
+                </div>
               );
             }
 
