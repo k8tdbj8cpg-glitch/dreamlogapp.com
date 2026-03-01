@@ -48,28 +48,48 @@ export function useEncryptedStorage(namespace: string, password?: string) {
         if (password) {
           // Retrieve or create a salt for this namespace.
           const saltKey = `${SALT_STORAGE_PREFIX}${namespace}`;
-          const storedSalt = localStorage.getItem(saltKey);
+          let storedSalt = localStorage.getItem(saltKey);
           let salt: Uint8Array;
 
           if (storedSalt) {
             salt = new Uint8Array(base64ToBuffer(storedSalt));
           } else {
             salt = generateSalt();
-            localStorage.setItem(saltKey, bufferToBase64(salt.buffer));
+            // Double-check before storing to avoid race condition:
+            // another instance may have stored a salt while we were generating ours.
+            if (!localStorage.getItem(saltKey)) {
+              localStorage.setItem(saltKey, bufferToBase64(salt.buffer));
+            } else {
+              // Another instance stored a salt, use that instead.
+              const storedAlternativeSalt = localStorage.getItem(saltKey);
+              if (storedAlternativeSalt) {
+                salt = new Uint8Array(base64ToBuffer(storedAlternativeSalt));
+              }
+            }
           }
 
           key = await deriveKeyFromPassword(password, salt);
         } else {
           // Retrieve or create a random key for this namespace.
           const keyStorageKey = `${KEY_STORAGE_PREFIX}${namespace}`;
-          const storedKey = localStorage.getItem(keyStorageKey);
+          let storedKey = localStorage.getItem(keyStorageKey);
 
           if (storedKey) {
             key = await importKey(storedKey);
           } else {
             key = await generateEncryptionKey();
             const exported = await exportKey(key);
-            localStorage.setItem(keyStorageKey, exported);
+            // Double-check before storing to avoid race condition:
+            // another instance may have stored a key while we were generating ours.
+            if (!localStorage.getItem(keyStorageKey)) {
+              localStorage.setItem(keyStorageKey, exported);
+            } else {
+              // Another instance stored a key, use that instead.
+              const storedAlternativeKey = localStorage.getItem(keyStorageKey);
+              if (storedAlternativeKey) {
+                key = await importKey(storedAlternativeKey);
+              }
+            }
           }
         }
 
