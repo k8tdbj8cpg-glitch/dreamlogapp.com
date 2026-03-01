@@ -31,7 +31,11 @@ lib/
   ai/             # AI SDK helpers and prompts
   db/             # Drizzle schema, migrations, queries
   editor/         # ProseMirror editor utilities
+  api/            # Typed fetch-based API client (ApiError, apiClient)
+  context/        # React context providers (AppProvider, useAppContext)
 components/       # Shared React components
+  ai-elements/    # AI-specific UI primitives (queue, plan, canvas, etc.)
+  elements/       # General UI primitives (message, tool, response, etc.)
 hooks/            # Custom React hooks
 tests/            # Playwright e2e tests
 ```
@@ -43,6 +47,8 @@ tests/            # Playwright e2e tests
 - Linting and formatting via `pnpm lint` / `pnpm format` (uses `ultracite check` / `ultracite fix`)
 - No magic numbers, no nested ternaries (disabled in linter for this project)
 - Import aliases: use `@/` for the project root
+- Always use block statements (`{}`) for if/else/try/catch bodies — no single-line implicit returns
+- Class properties must not use parameter property shorthand (`public readonly x`)
 
 ### Environment Variables
 - Local development: use `.env.local` (never commit)
@@ -67,6 +73,12 @@ tests/            # Playwright e2e tests
 - Uses Vercel AI SDK with AI Gateway
 - On Vercel deployments, OIDC tokens are used automatically (no API key needed)
 - For local/non-Vercel: set `AI_GATEWAY_API_KEY`
+- Default models: `grok-2-vision-1212` (vision/chat), `grok-3-mini` (fast completions)
+
+### UI Components
+- `components/ai-elements/queue.tsx` — `QueueItemDescription` renders `null` when children is empty/falsy; always check before passing empty strings
+- `lib/api/client.ts` — use `apiClient.get/post/put/patch/delete` for all fetch calls; errors throw `ApiError` (with `.status` and `.message`)
+- `lib/context/app-context.tsx` — wrap the app root with `<AppProvider>` to access `useAppContext()` (sidebar state, session mood, welcome banner)
 
 ### Testing
 - Playwright for end-to-end tests in `tests/`

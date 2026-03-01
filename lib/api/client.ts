@@ -4,12 +4,12 @@
  */
 
 export class ApiError extends Error {
-  constructor(
-    public readonly status: number,
-    message: string
-  ) {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
     super(message);
     this.name = "ApiError";
+    this.status = status;
   }
 }
 
@@ -22,7 +22,9 @@ function buildUrl(
   path: string,
   params?: Record<string, string | number | boolean>
 ): string {
-  if (!params || Object.keys(params).length === 0) return path;
+  if (!params || Object.keys(params).length === 0) {
+    return path;
+  }
   const search = new URLSearchParams(
     Object.entries(params).map(([k, v]) => [k, String(v)])
   );
@@ -54,7 +56,9 @@ async function request<T>(
     let message = response.statusText;
     try {
       const json = await response.json();
-      if (typeof json?.error === "string") message = json.error;
+      if (typeof json?.error === "string") {
+        message = json.error;
+      }
     } catch {
       // ignore JSON parse errors; keep statusText as message
     }
@@ -62,7 +66,9 @@ async function request<T>(
   }
 
   // Return undefined for 204 No Content
-  if (response.status === 204) return undefined as unknown as T;
+  if (response.status === 204) {
+    return undefined as unknown as T;
+  }
 
   return response.json() as Promise<T>;
 }
