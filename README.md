@@ -1,14 +1,10 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready Chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Chatbot</h1>
-</a>
+<h1 align="center">DreamLog</h1>
 
 <p align="center">
-    Chatbot (formerly AI Chatbot) is a free, open-source template built with Next.js and the AI SDK that helps you quickly build powerful chatbot applications.
+    DreamLog is an AI-powered dream journal built with Next.js and the Vercel AI SDK. Record your dreams, uncover patterns, and explore what your subconscious is telling you.
 </p>
 
 <p align="center">
-  <a href="https://chatbot.dev"><strong>Read Docs</strong></a> ·
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#model-providers"><strong>Model Providers</strong></a> ·
   <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
@@ -18,6 +14,10 @@
 
 ## Features
 
+- **AI Dream Journal Assistant** — An empathetic AI that helps you record, reflect on, and interpret your dreams
+- **Dream Pattern Tracking** — Identify recurring themes, symbols, and emotions across your journal
+- **Structured Dream Entries** — Save your dreams as documents for easy reference and review
+- **Sleep Wellness Guidance** — Receive gentle breathing and relaxation techniques to support better sleep
 - [Next.js](https://nextjs.org) App Router
   - Advanced routing for seamless navigation and performance
   - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
@@ -48,13 +48,13 @@ With the [AI SDK](https://ai-sdk.dev/docs/introduction), you can also switch to 
 
 ## Deploy Your Own
 
-You can deploy your own version of Chatbot to Vercel with one click:
+You can deploy your own version of DreamLog to Vercel with one click:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/templates/next.js/chatbot)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/k8tdbj8cpg-glitch/dreamlogapp.com)
 
 ## Running locally
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+You will need to use the environment variables [defined in `.env.example`](.env.example) to run DreamLog. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
 
 > Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
 
@@ -68,4 +68,4 @@ pnpm db:migrate # Setup database or apply latest database changes
 pnpm dev
 ```
 
-Your app template should now be running on [localhost:3000](http://localhost:3000).
+Your app should now be running on [localhost:3000](http://localhost:3000).
