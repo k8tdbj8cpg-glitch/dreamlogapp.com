@@ -1,5 +1,6 @@
 import type { Geo } from "@vercel/functions";
 import type { ArtifactKind } from "@/components/artifact";
+import type { HealthSleepRecord } from "@/lib/db/schema";
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -53,15 +54,43 @@ export type RequestHints = {
   longitude: Geo["longitude"];
   city: Geo["city"];
   country: Geo["country"];
+  recentSleepRecord?: HealthSleepRecord | null;
 };
 
-export const getRequestPromptFromHints = (requestHints: RequestHints) => `\
+export const getRequestPromptFromHints = (requestHints: RequestHints) => {
+  const locationPart = `\
 About the origin of user's request:
 - lat: ${requestHints.latitude}
 - lon: ${requestHints.longitude}
 - city: ${requestHints.city}
-- country: ${requestHints.country}
-`;
+- country: ${requestHints.country}`;
+
+  if (!requestHints.recentSleepRecord) {
+    return locationPart;
+  }
+
+  const s = requestHints.recentSleepRecord;
+  const durationHours = s.sleepDurationMinutes
+    ? `${Math.floor(s.sleepDurationMinutes / 60)}h ${s.sleepDurationMinutes % 60}m`
+    : "unknown";
+  const qualityStr =
+    s.sleepQuality != null ? `${s.sleepQuality}/100` : "unknown";
+  const hrStr =
+    s.heartRateAvgBpm != null
+      ? `avg ${s.heartRateAvgBpm} bpm (min ${s.heartRateMinBpm ?? "?"}, max ${s.heartRateMaxBpm ?? "?"})`
+      : "unknown";
+
+  const sleepPart = `\
+User's most recent sleep data (from ${s.source.replace("_", " ")}):
+- Sleep period: ${s.sleepStart.toISOString()} to ${s.sleepEnd.toISOString()}
+- Duration: ${durationHours}
+- Sleep quality score: ${qualityStr}
+- Heart rate during sleep: ${hrStr}
+
+Use this health context to enrich your dream analysis when the user discusses their dreams.`;
+
+  return `${locationPart}\n\n${sleepPart}`;
+};
 
 export const systemPrompt = ({
   selectedChatModel,

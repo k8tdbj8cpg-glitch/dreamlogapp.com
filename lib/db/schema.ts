@@ -2,6 +2,7 @@ import type { InferSelectModel } from "drizzle-orm";
 import {
   boolean,
   foreignKey,
+  integer,
   json,
   pgTable,
   primaryKey,
@@ -169,3 +170,25 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const healthSleepRecord = pgTable("HealthSleepRecord", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
+  source: varchar("source", {
+    enum: ["apple_health", "apple_watch", "manual"],
+  })
+    .notNull()
+    .default("apple_health"),
+  sleepStart: timestamp("sleepStart").notNull(),
+  sleepEnd: timestamp("sleepEnd").notNull(),
+  sleepDurationMinutes: integer("sleepDurationMinutes"),
+  sleepQuality: integer("sleepQuality"),
+  heartRateAvgBpm: integer("heartRateAvgBpm"),
+  heartRateMinBpm: integer("heartRateMinBpm"),
+  heartRateMaxBpm: integer("heartRateMaxBpm"),
+  createdAt: timestamp("createdAt").notNull(),
+});
+
+export type HealthSleepRecord = InferSelectModel<typeof healthSleepRecord>;
