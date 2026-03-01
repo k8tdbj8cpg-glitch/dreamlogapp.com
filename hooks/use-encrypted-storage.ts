@@ -45,8 +45,8 @@ export function useEncryptedStorage(namespace: string, password?: string) {
     if (password !== initialPassword) {
       console.warn(
         "[useEncryptedStorage] The password should not change after initialization. " +
-        "Changing the password will make previously encrypted data inaccessible. " +
-        "If you need to change the password, you must re-encrypt all data with the new key."
+          "Changing the password will make previously encrypted data inaccessible. " +
+          "If you need to change the password, you must re-encrypt all data with the new key."
       );
     }
   }, [password, initialPassword]);
@@ -62,7 +62,7 @@ export function useEncryptedStorage(namespace: string, password?: string) {
         if (password) {
           // Retrieve or create a salt for this namespace.
           const saltKey = `${SALT_STORAGE_PREFIX}${namespace}`;
-          let storedSalt = localStorage.getItem(saltKey);
+          const storedSalt = localStorage.getItem(saltKey);
           let salt: Uint8Array;
 
           if (storedSalt) {
@@ -71,14 +71,17 @@ export function useEncryptedStorage(namespace: string, password?: string) {
             salt = generateSalt();
             // Double-check before storing to avoid race condition:
             // another instance may have stored a salt while we were generating ours.
-            if (!localStorage.getItem(saltKey)) {
-              localStorage.setItem(saltKey, bufferToBase64(salt.buffer as ArrayBuffer));
-            } else {
+            if (localStorage.getItem(saltKey)) {
               // Another instance stored a salt, use that instead.
               const storedAlternativeSalt = localStorage.getItem(saltKey);
               if (storedAlternativeSalt) {
                 salt = new Uint8Array(base64ToBuffer(storedAlternativeSalt));
               }
+            } else {
+              localStorage.setItem(
+                saltKey,
+                bufferToBase64(salt.buffer as ArrayBuffer)
+              );
             }
           }
 
@@ -86,7 +89,7 @@ export function useEncryptedStorage(namespace: string, password?: string) {
         } else {
           // Retrieve or create a random key for this namespace.
           const keyStorageKey = `${KEY_STORAGE_PREFIX}${namespace}`;
-          let storedKey = localStorage.getItem(keyStorageKey);
+          const storedKey = localStorage.getItem(keyStorageKey);
 
           if (storedKey) {
             key = await importKey(storedKey);
@@ -95,14 +98,14 @@ export function useEncryptedStorage(namespace: string, password?: string) {
             const exported = await exportKey(key);
             // Double-check before storing to avoid race condition:
             // another instance may have stored a key while we were generating ours.
-            if (!localStorage.getItem(keyStorageKey)) {
-              localStorage.setItem(keyStorageKey, exported);
-            } else {
+            if (localStorage.getItem(keyStorageKey)) {
               // Another instance stored a key, use that instead.
               const storedAlternativeKey = localStorage.getItem(keyStorageKey);
               if (storedAlternativeKey) {
                 key = await importKey(storedAlternativeKey);
               }
+            } else {
+              localStorage.setItem(keyStorageKey, exported);
             }
           }
         }
@@ -117,7 +120,10 @@ export function useEncryptedStorage(namespace: string, password?: string) {
             err instanceof Error
               ? err
               : new Error("[useEncryptedStorage] Unknown initialisation error");
-          console.error("[useEncryptedStorage] Failed to initialise key:", initError);
+          console.error(
+            "[useEncryptedStorage] Failed to initialise key:",
+            initError
+          );
           setError(initError);
         }
       }

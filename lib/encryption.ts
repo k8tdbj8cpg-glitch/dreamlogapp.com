@@ -95,7 +95,10 @@ export async function importKey(base64Key: string): Promise<CryptoKey> {
  * Returns a base-64 encoded string that prefixes the random IV so that the
  * same value can later be passed to `decrypt`.
  */
-export async function encrypt(plaintext: string, key: CryptoKey): Promise<string> {
+export async function encrypt(
+  plaintext: string,
+  key: CryptoKey
+): Promise<string> {
   const subtle = getCrypto().subtle;
   const enc = new TextEncoder();
   const iv = getCrypto().getRandomValues(new Uint8Array(IV_LENGTH));
@@ -119,18 +122,17 @@ export async function encrypt(plaintext: string, key: CryptoKey): Promise<string
  *
  * Returns the original UTF-8 plaintext string.
  */
-export async function decrypt(ciphertext: string, key: CryptoKey): Promise<string> {
+export async function decrypt(
+  ciphertext: string,
+  key: CryptoKey
+): Promise<string> {
   const subtle = getCrypto().subtle;
   const combined = new Uint8Array(base64ToBuffer(ciphertext));
 
   const iv = combined.slice(0, IV_LENGTH);
   const data = combined.slice(IV_LENGTH);
 
-  const plaintext = await subtle.decrypt(
-    { name: ALGORITHM, iv },
-    key,
-    data
-  );
+  const plaintext = await subtle.decrypt({ name: ALGORITHM, iv }, key, data);
 
   return new TextDecoder().decode(plaintext);
 }

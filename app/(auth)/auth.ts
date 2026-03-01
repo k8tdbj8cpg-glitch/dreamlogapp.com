@@ -62,9 +62,9 @@ export const {
           return null;
         }
 
-        return { 
-          ...user, 
-          type: user.isPremium ? "premium" : "regular" 
+        return {
+          ...user,
+          type: user.isPremium ? "premium" : "regular",
         };
       },
     }),
