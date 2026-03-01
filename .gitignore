@@ -38,6 +38,9 @@ yarn-error.log*
 .vercel
 .env*.local
 
+# TypeScript incremental build info
+tsconfig.tsbuildinfo
+
 # Playwright
 /test-results/
 /playwright-report/
