@@ -36,6 +36,20 @@ export function useEncryptedStorage(namespace: string, password?: string) {
   const [cryptoKey, setCryptoKey] = useState<CryptoKey | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [initialPassword] = useState<string | undefined>(password);
+
+  // Warn if the password changes after initialization.
+  // Changing the password would derive a different key from the same salt,
+  // making previously encrypted data inaccessible.
+  useEffect(() => {
+    if (password !== initialPassword) {
+      console.warn(
+        "[useEncryptedStorage] The password should not change after initialization. " +
+        "Changing the password will make previously encrypted data inaccessible. " +
+        "If you need to change the password, you must re-encrypt all data with the new key."
+      );
+    }
+  }, [password, initialPassword]);
 
   // Initialise (or restore) the encryption key once on mount.
   useEffect(() => {
@@ -113,7 +127,7 @@ export function useEncryptedStorage(namespace: string, password?: string) {
     return () => {
       cancelled = true;
     };
-  }, [namespace, password]);
+  }, [namespace]);
 
   /** Encrypt `value` and write it to localStorage under `key`. */
   const setItem = useCallback(
