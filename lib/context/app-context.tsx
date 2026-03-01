@@ -9,12 +9,7 @@ import {
   useState,
 } from "react";
 
-export type DreamMood =
-  | "peaceful"
-  | "vivid"
-  | "anxious"
-  | "lucid"
-  | "neutral";
+export type DreamMood = "peaceful" | "vivid" | "anxious" | "lucid" | "neutral";
 
 type AppState = {
   /** Whether the left sidebar is open */
@@ -45,10 +40,14 @@ const DEFAULT_STATE: AppState = {
 };
 
 function loadPersistedState(): AppState {
-  if (typeof window === "undefined") return DEFAULT_STATE;
+  if (typeof window === "undefined") {
+    return DEFAULT_STATE;
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STATE;
+    if (!raw) {
+      return DEFAULT_STATE;
+    }
     return { ...DEFAULT_STATE, ...JSON.parse(raw) };
   } catch {
     return DEFAULT_STATE;
