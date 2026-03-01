@@ -9,12 +9,7 @@ import {
   useState,
 } from "react";
 
-export type DreamMood =
-  | "peaceful"
-  | "vivid"
-  | "anxious"
-  | "lucid"
-  | "neutral";
+export type DreamMood = "peaceful" | "vivid" | "anxious" | "lucid" | "neutral";
 
 type AppState = {
   /** Whether the left sidebar is open */
