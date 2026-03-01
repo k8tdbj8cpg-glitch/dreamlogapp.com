@@ -62,7 +62,10 @@ export const {
           return null;
         }
 
-        return { ...user, type: "regular" };
+        return { 
+          ...user, 
+          type: user.isPremium ? "premium" : "regular" 
+        };
       },
     }),
     Credentials({
