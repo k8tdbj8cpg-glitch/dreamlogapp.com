@@ -55,6 +55,27 @@ export function getLocalStorage(key: string) {
   return [];
 }
 
+/**
+ * Returns `true` when the end-to-end encryption feature is available for the
+ * given user.
+ *
+ * E2EE is a **premium-only** feature restricted to U.S. users. The locale
+ * check uses the browser's `Intl` API as a best-effort client-side signal.
+ * For production enforcement, combine this with server-side IP geolocation or
+ * user-verified location stored in the account profile, as timezone values can
+ * be changed by the user.
+ *
+ * @param userType - The type of the currently authenticated user.
+ */
+export function isEncryptionEligible(userType: string): boolean {
+  const isPremium = userType === 'premium';
+  const isUsLocale =
+    typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone.startsWith('America/')
+      : false;
+  return isPremium && isUsLocale;
+}
+
 export function generateUUID(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
