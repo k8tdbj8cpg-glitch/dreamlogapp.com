@@ -34,7 +34,7 @@
 - Dream Journal
   - AI-assisted dream interpretation and pattern recognition
   - Reusable UI components under `src/components/` (Header, Footer)
-  - Placeholder pages under `src/pages/` (Home)
+  - Placeholder pages under `src/views/` (Home)
   - API helpers under `src/api/` for future backend integration
 
 ## Model Providers
@@ -129,7 +129,7 @@ Contributions are welcome! To get started:
 app/          # Next.js App Router pages and API routes
 src/
   components/ # Reusable UI components (Header, Footer, …)
-  pages/      # Page-level components (Home, …)
+  views/      # Page-level components (Home, …)
   api/        # API helper functions
 components/   # Shared shadcn/ui components
 lib/          # DB schema, AI helpers, utilities
