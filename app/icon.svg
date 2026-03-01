@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="DreamLogApp icon">
+  <title>DreamLogApp icon</title>
+  <defs>
+    <!-- Background: near-black to deep blue-purple -->
+    <linearGradient id="bgGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1024" y2="1024">
+      <stop offset="0%" stop-color="#060014"/>
+      <stop offset="35%" stop-color="#130535"/>
+      <stop offset="70%" stop-color="#1e0c4e"/>
+      <stop offset="100%" stop-color="#0a0025"/>
+    </linearGradient>
+
+    <!-- Pink/purple radial glow in the mid-section -->
+    <radialGradient id="pinkGlow" gradientUnits="userSpaceOnUse" cx="512" cy="560" r="500">
+      <stop offset="0%"   stop-color="#8b21cc" stop-opacity="0.28"/>
+      <stop offset="45%"  stop-color="#c026a0" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#060014" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- D letter: pink → purple → indigo -->
+    <linearGradient id="dGrad" gradientUnits="userSpaceOnUse" x1="260" y1="180" x2="780" y2="760">
+      <stop offset="0%"   stop-color="#f472b6"/>
+      <stop offset="42%"  stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+
+    <!-- Moon: bright lavender center fading to purple -->
+    <radialGradient id="moonGrad" gradientUnits="userSpaceOnUse" cx="740" cy="178" r="92">
+      <stop offset="0%"   stop-color="#faf5ff"/>
+      <stop offset="45%"  stop-color="#e9d5ff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </radialGradient>
+
+    <!-- Glow filter for the D -->
+    <filter id="dGlow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Soft glow for the moon -->
+    <filter id="moonGlowFilter" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+  </defs>
+
+  <!-- ── Background ─────────────────────────────────────────── -->
+  <rect width="1024" height="1024" rx="130" fill="url(#bgGrad)"/>
+  <rect width="1024" height="1024" rx="130" fill="url(#pinkGlow)"/>
+
+  <!-- ── Stars ──────────────────────────────────────────────── -->
+  <g fill="white">
+    <circle cx="98"  cy="80"  r="2.4" opacity="0.65"/>
+    <circle cx="225" cy="52"  r="1.7" opacity="0.5"/>
+    <circle cx="415" cy="88"  r="2.1" opacity="0.55"/>
+    <circle cx="588" cy="44"  r="1.5" opacity="0.6"/>
+    <circle cx="672" cy="112" r="1.9" opacity="0.45"/>
+    <circle cx="868" cy="84"  r="2.6" opacity="0.6"/>
+    <circle cx="948" cy="158" r="1.7" opacity="0.5"/>
+    <circle cx="70"  cy="192" r="1.9" opacity="0.45"/>
+    <circle cx="155" cy="288" r="1.4" opacity="0.4"/>
+    <circle cx="938" cy="308" r="2.1" opacity="0.5"/>
+    <circle cx="52"  cy="385" r="1.7" opacity="0.4"/>
+    <circle cx="902" cy="418" r="1.4" opacity="0.45"/>
+    <circle cx="308" cy="40"  r="1.9" opacity="0.55"/>
+    <circle cx="808" cy="265" r="1.7" opacity="0.4"/>
+    <circle cx="478" cy="25"  r="2.3" opacity="0.6"/>
+    <circle cx="962" cy="240" r="1.5" opacity="0.35"/>
+    <circle cx="140" cy="145" r="1.3" opacity="0.4"/>
+    <circle cx="560" cy="130" r="1.6" opacity="0.35"/>
+  </g>
+
+  <!-- ── Crescent Moon (upper-right) ───────────────────────── -->
+  <!--
+    Outer circle: center (770, 200), r=88
+    Inner circle: center (818, 200), r=76
+    Intersection points: (815, 124) and (815, 276)
+    Path: large-arc CCW around left side, then small-arc CW through right side
+  -->
+  <path
+    d="M 815 124 A 88 88 0 1 0 815 276 A 76 76 0 0 1 815 124 Z"
+    fill="url(#moonGrad)"
+    filter="url(#moonGlowFilter)"
+  />
+
+  <!-- ── Palm Tree Silhouette (lower-left) ─────────────────── -->
+  <g fill="#0e042a" opacity="0.88">
+    <!-- Trunk: slightly curved, widens toward the base -->
+    <path d="
+      M 248 1024
+      C 252 940 258 856 264 774
+      C 268 696 274 632 284 578
+      C 288 550 294 524 302 508
+      L 324 510
+      C 318 526 314 552 312 580
+      C 304 634 300 698 298 776
+      C 296 858 300 942 306 1024
+      Z
+    "/>
+
+    <!-- Frond 1 – sweeping far left (broad palm leaf shape) -->
+    <path d="
+      M 310 510
+      C 285 495 250 482 210 475
+      C 175 469 140 472 112 482
+      C  92 490  82 500  88 510
+      C  94 520 112 518 138 512
+      C 170 504 208 502 246 508
+      C 272 512 295 518 310 524
+      Z
+    "/>
+
+    <!-- Frond 2 – upper-left diagonal (broad tapered leaf) -->
+    <path d="
+      M 308 504
+      C 282 472 248 440 212 420
+      C 188 408 166 404 154 412
+      C 144 420 150 432 168 438
+      C 194 448 228 464 268 490
+      C 286 500 302 508 308 514
+      Z
+    "/>
+
+    <!-- Frond 3 – sweeping right (broad palm leaf) -->
+    <path d="
+      M 316 508
+      C 346 490 382 474 420 468
+      C 452 464 476 468 488 478
+      C 498 488 494 498 476 502
+      C 452 506 418 502 384 500
+      C 352 498 330 504 320 516
+      Z
+    "/>
+
+    <!-- Frond 4 – upper-right diagonal (broad tapered leaf) -->
+    <path d="
+      M 314 502
+      C 340 468 372 436 404 418
+      C 422 408 440 406 448 414
+      C 456 422 448 434 432 442
+      C 406 454 370 474 326 508
+      Z
+    "/>
+
+    <!-- Frond 5 – arching upward-center (narrow upright frond) -->
+    <path d="
+      M 306 500
+      C 296 452 290 396 298 350
+      C 302 326 312 312 320 315
+      C 328 318 332 334 330 360
+      C 324 406 322 460 328 506
+      Z
+    "/>
+
+    <!-- Frond 6 – lower-left drooping -->
+    <path d="
+      M 308 518
+      C 278 514 242 518 210 530
+      C 186 540 172 552 178 560
+      C 184 568 200 562 222 552
+      C 252 538 284 526 312 526
+      Z
+    "/>
+
+    <!-- Coconuts cluster -->
+    <circle cx="310" cy="514" r="14"/>
+    <circle cx="325" cy="522" r="12"/>
+    <circle cx="295" cy="521" r="13"/>
+  </g>
+
+  <!-- ── Large italic 'D' (centered) ───────────────────────── -->
+  <text
+    x="512"
+    y="715"
+    font-family="Georgia, serif"
+    font-size="560"
+    font-weight="bold"
+    font-style="italic"
+    text-anchor="middle"
+    fill="url(#dGrad)"
+    filter="url(#dGlow)"
+    opacity="0.94"
+  >D</text>
+</svg>
