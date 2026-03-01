@@ -72,7 +72,7 @@ export function useEncryptedStorage(namespace: string, password?: string) {
             // Double-check before storing to avoid race condition:
             // another instance may have stored a salt while we were generating ours.
             if (!localStorage.getItem(saltKey)) {
-              localStorage.setItem(saltKey, bufferToBase64(salt.buffer));
+              localStorage.setItem(saltKey, bufferToBase64(salt.buffer as ArrayBuffer));
             } else {
               // Another instance stored a salt, use that instead.
               const storedAlternativeSalt = localStorage.getItem(saltKey);

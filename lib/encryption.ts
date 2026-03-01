@@ -111,7 +111,7 @@ export async function encrypt(plaintext: string, key: CryptoKey): Promise<string
   combined.set(iv, 0);
   combined.set(new Uint8Array(ciphertext), iv.byteLength);
 
-  return bufferToBase64(combined.buffer);
+  return bufferToBase64(combined.buffer as ArrayBuffer);
 }
 
 /**
