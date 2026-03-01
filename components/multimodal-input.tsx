@@ -34,6 +34,7 @@ import {
 } from "@/lib/ai/models";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { PromptInputSpeechButton } from "@/components/ai-elements/prompt-input";
 import {
   PromptInput,
   PromptInputSubmit,
@@ -383,6 +384,12 @@ function PureMultimodalInput({
               fileInputRef={fileInputRef}
               selectedModelId={selectedModelId}
               status={status}
+            />
+            <PromptInputSpeechButton
+              className="aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent"
+              data-testid="voice-input-button"
+              onTranscriptionChange={setInput}
+              textareaRef={textareaRef}
             />
             <ModelSelectorCompact
               onModelChange={onModelChange}
