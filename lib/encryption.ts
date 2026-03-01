@@ -21,7 +21,7 @@ function getCrypto(): Crypto {
 
 /** Generate a new AES-GCM encryption key. */
 export async function generateEncryptionKey(): Promise<CryptoKey> {
-  return getCrypto().subtle.generateKey(
+  return await getCrypto().subtle.generateKey(
     { name: ALGORITHM, length: KEY_LENGTH },
     true,
     ["encrypt", "decrypt"]
@@ -80,7 +80,7 @@ export async function exportKey(key: CryptoKey): Promise<string> {
  */
 export async function importKey(base64Key: string): Promise<CryptoKey> {
   const raw = base64ToBuffer(base64Key);
-  return getCrypto().subtle.importKey(
+  return await getCrypto().subtle.importKey(
     "raw",
     raw,
     { name: ALGORITHM, length: KEY_LENGTH },

@@ -133,7 +133,7 @@ export function useEncryptedStorage(namespace: string, password?: string) {
     return () => {
       cancelled = true;
     };
-  }, [namespace]);
+  }, [namespace, password]);
 
   /** Encrypt `value` and write it to localStorage under `key`. */
   const setItem = useCallback(
@@ -164,7 +164,7 @@ export function useEncryptedStorage(namespace: string, password?: string) {
       if (ciphertext === null) {
         return null;
       }
-      return decrypt(ciphertext, cryptoKey);
+      return await decrypt(ciphertext, cryptoKey);
     },
     [cryptoKey, namespace]
   );
