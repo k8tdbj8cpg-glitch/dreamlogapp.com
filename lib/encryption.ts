@@ -50,7 +50,7 @@ export async function deriveKeyFromPassword(
   return subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt,
+      salt: salt as Uint8Array<ArrayBuffer>,
       iterations: PBKDF2_ITERATIONS,
       hash: PBKDF2_HASH,
     },
