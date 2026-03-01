@@ -23,6 +23,8 @@ import {
   chat,
   type DBMessage,
   document,
+  type HealthSleepRecord,
+  healthSleepRecord,
   message,
   type Suggestion,
   stream,
@@ -597,6 +599,94 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     throw new ChatbotError(
       "bad_request:database",
       "Failed to get stream ids by chat id"
+    );
+  }
+}
+
+export async function saveHealthSleepRecord({
+  userId,
+  source,
+  sleepStart,
+  sleepEnd,
+  sleepDurationMinutes,
+  sleepQuality,
+  heartRateAvgBpm,
+  heartRateMinBpm,
+  heartRateMaxBpm,
+}: {
+  userId: string;
+  source: "apple_health" | "apple_watch" | "manual";
+  sleepStart: Date;
+  sleepEnd: Date;
+  sleepDurationMinutes?: number;
+  sleepQuality?: number;
+  heartRateAvgBpm?: number;
+  heartRateMinBpm?: number;
+  heartRateMaxBpm?: number;
+}) {
+  try {
+    return await db
+      .insert(healthSleepRecord)
+      .values({
+        userId,
+        source,
+        sleepStart,
+        sleepEnd,
+        sleepDurationMinutes,
+        sleepQuality,
+        heartRateAvgBpm,
+        heartRateMinBpm,
+        heartRateMaxBpm,
+        createdAt: new Date(),
+      })
+      .returning();
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to save health sleep record"
+    );
+  }
+}
+
+export async function getHealthSleepRecordsByUserId({
+  userId,
+  limit = 30,
+}: {
+  userId: string;
+  limit?: number;
+}): Promise<HealthSleepRecord[]> {
+  try {
+    return await db
+      .select()
+      .from(healthSleepRecord)
+      .where(eq(healthSleepRecord.userId, userId))
+      .orderBy(desc(healthSleepRecord.sleepStart))
+      .limit(limit);
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get health sleep records by user id"
+    );
+  }
+}
+
+export async function getMostRecentHealthSleepRecord({
+  userId,
+}: {
+  userId: string;
+}): Promise<HealthSleepRecord | null> {
+  try {
+    const [record] = await db
+      .select()
+      .from(healthSleepRecord)
+      .where(eq(healthSleepRecord.userId, userId))
+      .orderBy(desc(healthSleepRecord.sleepStart))
+      .limit(1);
+    return record ?? null;
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get most recent health sleep record"
     );
   }
 }
