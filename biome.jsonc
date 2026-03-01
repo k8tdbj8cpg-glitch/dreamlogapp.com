@@ -23,6 +23,14 @@
       "!hooks/use-mobile.ts"
     ]
   },
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedInterfaceMembers": "on",
+        "useSortedProperties": "on"
+      }
+    }
+  },
   "linter": {
     "rules": {
       "suspicious": {
