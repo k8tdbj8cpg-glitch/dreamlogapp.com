@@ -5,9 +5,6 @@ import { isDevelopmentEnvironment } from "@/lib/constants";
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const redirectUrl = searchParams.get("redirectUrl") || "/";
-
     // Validate Environment Variables
     if (!process.env.AUTH_SECRET) {
       console.error("[/api/auth/guest] AUTH_SECRET is not set");
@@ -24,14 +21,22 @@ export async function GET(request: Request) {
     });
 
     if (token) {
-      console.log("[/api/auth/guest] User already authenticated, redirecting...");
+      console.log(
+        "[/api/auth/guest] User already authenticated, redirecting..."
+      );
       return NextResponse.redirect(new URL("/", request.url));
     }
 
     console.log("[/api/auth/guest] Attempting guest sign-in...");
     return await signIn("guest", { redirect: true, redirectTo: "/login" }); // Updated alignment with `authConfig`
   } catch (error) {
-    console.error("[/api/auth/guest] Error occurred:", error.message);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error(
+      "[/api/auth/guest] Error occurred:",
+      error instanceof Error ? error.message : String(error)
+    );
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
