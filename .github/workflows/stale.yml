@@ -1,0 +1,56 @@
+# Stale issue and pull-request management.
+# Marks items as stale after a period of inactivity and closes them
+# after a further period with no response.
+name: Stale
+
+on:
+  schedule:
+    # Run every day at 01:00 UTC
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    name: Mark and close stale items
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stale issues and PRs
+        uses: actions/stale@v9
+        with:
+          # ── Timing ─────────────────────────────────────────────────────────
+          days-before-stale: 30
+          days-before-close: 14
+
+          # ── Issues ─────────────────────────────────────────────────────────
+          stale-issue-label: "stale"
+          stale-issue-message: >
+            This issue has been automatically marked as stale because it has not
+            had recent activity. It will be closed in 14 days if no further
+            activity occurs. Thank you for your contributions!
+          close-issue-message: >
+            This issue was closed automatically after 14 days of inactivity
+            following the stale label. Please re-open if you believe it is still
+            relevant.
+
+          # ── Pull Requests ───────────────────────────────────────────────────
+          stale-pr-label: "stale"
+          stale-pr-message: >
+            This pull request has been automatically marked as stale because it
+            has not had recent activity. It will be closed in 14 days if no
+            further action is taken.
+          close-pr-message: >
+            This pull request was closed automatically after 14 days of
+            inactivity. Feel free to re-open or create a new PR if the work is
+            still relevant.
+
+          # ── Exemptions ─────────────────────────────────────────────────────
+          exempt-issue-labels: "pinned,security,in-progress,blocked"
+          exempt-pr-labels: "pinned,security,in-progress,blocked,do-not-merge"
+          exempt-all-milestones: true
+
+          # ── Limits ─────────────────────────────────────────────────────────
+          operations-per-run: 100

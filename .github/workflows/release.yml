@@ -1,0 +1,57 @@
+# Release autopilot: create a GitHub Release automatically when a version tag
+# is pushed (e.g. v1.2.3).  The release notes are generated from the commit
+# history between the previous tag and HEAD.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript type-check
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        # Stub env vars so the compiler does not error on missing required vars.
+        # No real database or Redis connection is made during `next build`
+        # (dynamic routes are not pre-rendered at build time).
+        run: pnpm exec next build
+        env:
+          POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/dreamlogapp
+          AUTH_SECRET: ci-build-placeholder-not-used-at-runtime
+          BLOB_READ_WRITE_TOKEN: vercel_blob_rw_placeholder
+          REDIS_URL: redis://localhost:6379
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
