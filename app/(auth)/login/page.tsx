@@ -53,7 +53,9 @@ export default function Page() {
     <div className="flex h-dvh w-screen items-start justify-center bg-background pt-12 md:items-center md:pt-0">
       <div className="flex w-full max-w-md flex-col gap-8 overflow-hidden rounded-2xl">
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <div aria-hidden="true" className="mb-1 text-4xl">🌙</div>
+          <div aria-hidden="true" className="mb-1 text-4xl">
+            🌙
+          </div>
           <h1 className="font-bold text-2xl text-primary">DreamLog</h1>
           <h3 className="font-semibold text-xl dark:text-zinc-50">Sign In</h3>
           <p className="text-muted-foreground text-sm">
