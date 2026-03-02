@@ -8,16 +8,26 @@ export const Greeting = () => {
     >
       <motion.div
         animate={{ opacity: 1, y: 0 }}
+        className="mb-2 font-bold text-3xl text-primary md:text-4xl"
+        exit={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 10 }}
+        transition={{ delay: 0.4 }}
+      >
+        <span aria-hidden="true">🌙</span>
+        {" DreamLog"}
+      </motion.div>
+      <motion.div
+        animate={{ opacity: 1, y: 0 }}
         className="font-semibold text-xl md:text-2xl"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
       >
-        Welcome to DreamLog 🌙
+        Your AI-powered dream journal
       </motion.div>
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className="text-xl text-zinc-500 md:text-2xl"
+        className="mt-2 text-lg text-muted-foreground md:text-xl"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.6 }}
