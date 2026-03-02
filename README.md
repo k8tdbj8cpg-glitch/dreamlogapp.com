@@ -128,8 +128,7 @@ Contributions are welcome! To get started:
 ```
 app/          # Next.js App Router pages and API routes
 src/
-  components/ # Reusable UI components (Header, Footer, …)
-  pages/      # Page-level components (Home, …)
+  components/ # Reusable UI components (Header, Footer, Home, …)
   api/        # API helper functions
 components/   # Shared shadcn/ui components
 lib/          # DB schema, AI helpers, utilities
