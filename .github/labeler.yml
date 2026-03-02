@@ -1,0 +1,32 @@
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: ["*.md", "**/*.md"]
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ["package.json", "pnpm-lock.yaml"]
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: [".github/workflows/**"]
+
+database:
+  - changed-files:
+      - any-glob-to-any-file: ["lib/db/**", "drizzle.config.ts"]
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: ["tests/**", "playwright.config.ts"]
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "app/**"
+          - "src/**"
+          - "components/**"
+          - "hooks/**"
+          - "public/**"
+
+ai:
+  - changed-files:
+      - any-glob-to-any-file: ["lib/ai/**"]
