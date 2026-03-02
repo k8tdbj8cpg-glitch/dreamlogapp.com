@@ -1,0 +1,192 @@
+# Automation workflow for merging approved pull requests and closing stale ones.
+# Triggered manually via workflow_dispatch or automatically on a schedule.
+name: PR Automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print actions without executing)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge-approved-prs:
+    name: Merge approved pull requests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge PRs with green checks
+        uses: actions/github-script@v7
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const dryRun = process.env.DRY_RUN === 'true';
+
+            // Pull requests to merge (those with green checks)
+            const prsToMerge = [44, 41, 3, 2, 23, 22, 19, 14, 29, 30];
+
+            for (const prNumber of prsToMerge) {
+              let pr;
+              try {
+                const { data } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                });
+                pr = data;
+              } catch (err) {
+                console.log(`PR #${prNumber}: not found or already closed – skipping.`);
+                continue;
+              }
+
+              if (pr.state !== 'open') {
+                console.log(`PR #${prNumber} (${pr.title}): already ${pr.state} – skipping.`);
+                continue;
+              }
+
+              // Check that all status checks have passed
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: pr.head.sha,
+              });
+
+              const incomplete = checks.check_runs.filter(
+                (run) => run.status !== 'completed'
+              );
+              const failed = checks.check_runs.filter(
+                (run) => run.conclusion !== null && !['success', 'skipped', 'neutral'].includes(run.conclusion)
+              );
+
+              if (incomplete.length > 0) {
+                console.log(`PR #${prNumber}: ${incomplete.length} check(s) still running – skipping.`);
+                continue;
+              }
+
+              if (failed.length > 0) {
+                console.log(`PR #${prNumber}: ${failed.length} check(s) failed – skipping.`);
+                continue;
+              }
+
+              if (pr.mergeable === false) {
+                console.log(`PR #${prNumber}: has conflicts – skipping.`);
+                continue;
+              }
+
+              if (dryRun) {
+                console.log(`[dry-run] Would merge PR #${prNumber}: ${pr.title}`);
+              } else {
+                try {
+                  await github.rest.pulls.merge({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: prNumber,
+                    merge_method: 'squash',
+                  });
+                  console.log(`Merged PR #${prNumber}: ${pr.title}`);
+                } catch (err) {
+                  console.log(`PR #${prNumber}: merge failed – ${err instanceof Error ? err.message : String(err)}`);
+                }
+              }
+            }
+
+  close-stale-prs:
+    name: Close stale pull requests
+    runs-on: ubuntu-latest
+    needs: merge-approved-prs
+    steps:
+      - name: Close stale PRs
+        uses: actions/github-script@v7
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const dryRun = process.env.DRY_RUN === 'true';
+
+            // Pull requests to close (stale / superseded)
+            const prsToClose = [1, 5, 6, 8, 9, 10, 11, 12, 13, 38, 39, 40, 42, 45, 46];
+
+            for (const prNumber of prsToClose) {
+              let pr;
+              try {
+                const { data } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                });
+                pr = data;
+              } catch (err) {
+                console.log(`PR #${prNumber}: not found – skipping.`);
+                continue;
+              }
+
+              if (pr.state !== 'open') {
+                console.log(`PR #${prNumber} (${pr.title}): already ${pr.state} – skipping.`);
+                continue;
+              }
+
+              if (dryRun) {
+                console.log(`[dry-run] Would close PR #${prNumber}: ${pr.title}`);
+              } else {
+                try {
+                  await github.rest.pulls.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: prNumber,
+                    state: 'closed',
+                  });
+                  console.log(`Closed PR #${prNumber}: ${pr.title}`);
+                } catch (err) {
+                  console.log(`PR #${prNumber}: close failed – ${err instanceof Error ? err.message : String(err)}`);
+                }
+              }
+            }
+
+  verify-build:
+    name: Verify build after PR actions
+    runs-on: ubuntu-latest
+    needs: [merge-approved-prs, close-stale-prs]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript type-check
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Next.js build
+        run: pnpm exec next build
+        env:
+          POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/dreamlogapp
+          AUTH_SECRET: ci-build-placeholder-not-used-at-runtime
+          BLOB_READ_WRITE_TOKEN: vercel_blob_rw_placeholder
+          REDIS_URL: redis://localhost:6379
