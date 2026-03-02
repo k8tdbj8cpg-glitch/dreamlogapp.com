@@ -4,18 +4,34 @@ import { signIn } from "@/app/(auth)/auth";
 import { isDevelopmentEnvironment } from "@/lib/constants";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const redirectUrl = searchParams.get("redirectUrl") || "/";
+  try {
+    const { searchParams } = new URL(request.url);
+    const redirectUrl = searchParams.get("redirectUrl") || "/";
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: !isDevelopmentEnvironment,
-  });
+    // Validate Environment Variables
+    if (!process.env.AUTH_SECRET) {
+      console.error("[/api/auth/guest] AUTH_SECRET is not set");
+      return NextResponse.json(
+        { error: "Server misconfiguration" },
+        { status: 500 }
+      );
+    }
 
-  if (token) {
-    return NextResponse.redirect(new URL("/", request.url));
+    const token = await getToken({
+      req: request,
+      secret: process.env.AUTH_SECRET,
+      secureCookie: !isDevelopmentEnvironment,
+    });
+
+    if (token) {
+      console.log("[/api/auth/guest] User already authenticated, redirecting...");
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    console.log("[/api/auth/guest] Attempting guest sign-in...");
+    return await signIn("guest", { redirect: true, redirectTo: "/login" }); // Updated alignment with `authConfig`
+  } catch (error) {
+    console.error("[/api/auth/guest] Error occurred:", error.message);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  return signIn("guest", { redirect: true, redirectTo: redirectUrl });
 }
