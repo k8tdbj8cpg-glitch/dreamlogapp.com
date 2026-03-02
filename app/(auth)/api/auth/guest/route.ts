@@ -5,9 +5,6 @@ import { isDevelopmentEnvironment } from "@/lib/constants";
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const _redirectUrl = searchParams.get("redirectUrl") || "/";
-
     // Validate Environment Variables
     if (!process.env.AUTH_SECRET) {
       console.error("[/api/auth/guest] AUTH_SECRET is not set");
@@ -35,7 +32,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error(
       "[/api/auth/guest] Error occurred:",
-      (error as Error).message
+      error instanceof Error ? error.message : String(error)
     );
     return NextResponse.json(
       { error: "Internal server error" },
