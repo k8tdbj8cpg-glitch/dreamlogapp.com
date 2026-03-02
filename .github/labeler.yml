@@ -1,0 +1,61 @@
+# Auto-labeler configuration for pull-request-labeler action.
+# Labels are applied based on the files changed in a pull request.
+
+# ── CI / Infrastructure ───────────────────────────────────────────────────────
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "*.config.ts"
+          - "*.config.mjs"
+          - "tsconfig*.json"
+          - "biome.jsonc"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package.json"
+          - "pnpm-lock.yaml"
+
+# ── Application areas ─────────────────────────────────────────────────────────
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "app/**"
+          - "components/**"
+          - "src/components/**"
+          - "hooks/**"
+          - "public/**"
+
+api:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "app/**/api/**"
+          - "lib/api/**"
+          - "src/api/**"
+
+database:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "lib/db/**"
+          - "drizzle.config.ts"
+
+ai:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "lib/ai/**"
+          - "artifacts/**"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "tests/**"
+          - "**/*.test.ts"
+          - "**/*.test.tsx"
+          - "playwright.config.ts"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - ".github/copilot-instructions.md"
