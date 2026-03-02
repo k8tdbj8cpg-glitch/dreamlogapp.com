@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "tsx lib/db/migrate && next build",
+    "postinstall": "pnpm db:migrate",
     "start": "next start",
     "lint": "ultracite check",
     "format": "ultracite fix",
