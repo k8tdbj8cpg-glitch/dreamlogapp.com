@@ -1,8 +1,8 @@
-.bg-orange-400 {
-    --tw-bg-opacity: 1;
-    background-color: rgba(251, 191, 36, var(--tw-bg-opacity));
+/* Global styles for the application. */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* More styles... */
