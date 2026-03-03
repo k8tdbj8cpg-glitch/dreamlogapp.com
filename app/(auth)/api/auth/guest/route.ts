@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { isDevelopmentEnvironment } from "@/lib/constants";
-import { signIn } from "@/app/(auth)/auth";
 
 export async function GET(request: Request) {
   try {
