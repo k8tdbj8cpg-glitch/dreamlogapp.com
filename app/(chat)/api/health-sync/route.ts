@@ -17,7 +17,13 @@ const sleepSyncSchema = z.object({
   qualityScore: z.number().min(0).max(10).optional(),
   heartRateAvg: z.number().int().positive().optional(),
   activityData: z.record(z.unknown()).optional(),
-});
+}).refine(
+  (data) => new Date(data.sleepEnd) > new Date(data.sleepStart),
+  {
+    message: "sleepEnd must be after sleepStart",
+    path: ["sleepEnd"],
+  }
+);
 
 export type SleepSyncBody = z.infer<typeof sleepSyncSchema>;
 
