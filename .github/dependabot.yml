@@ -1,0 +1,45 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+          - "radix-ui"
+      ai-sdk:
+        patterns:
+          - "@ai-sdk/*"
+          - "ai"
+      codemirror:
+        patterns:
+          - "@codemirror/*"
+          - "codemirror"
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
+          - "@vercel/otel"
+      dev-tooling:
+        patterns:
+          - "@biomejs/*"
+          - "ultracite"
+          - "typescript"
+          - "tsx"
+          - "drizzle-kit"
+    ignore:
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
