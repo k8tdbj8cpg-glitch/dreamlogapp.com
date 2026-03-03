@@ -796,13 +796,13 @@ export async function updateUserStreak({
   try {
     const streak = await getOrCreateUserStreak({ userId });
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const lastLog = streak.lastLogDate
-      ? new Date(
-          streak.lastLogDate.getFullYear(),
-          streak.lastLogDate.getMonth(),
-          streak.lastLogDate.getDate()
-        )
+      ? new Date(Date.UTC(
+          streak.lastLogDate.getUTCFullYear(),
+          streak.lastLogDate.getUTCMonth(),
+          streak.lastLogDate.getUTCDate()
+        ))
       : null;
 
     let newCurrent = streak.currentStreak;
