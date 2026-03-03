@@ -3,9 +3,10 @@ import { getToken } from "next-auth/jwt";
 import { isDevelopmentEnvironment } from "@/lib/constants";
 
 export async function GET(request: Request) {
+  let redirectUrl = "/";
   try {
     const { searchParams } = new URL(request.url);
-    const redirectUrl = searchParams.get("redirectUrl") || "/";
+    redirectUrl = searchParams.get("redirectUrl") || "/";
 
     if (!process.env.AUTH_SECRET) {
       console.error("[/api/auth/guest] AUTH_SECRET is not set");
@@ -30,10 +31,7 @@ export async function GET(request: Request) {
 
     return NextResponse.redirect(signInUrl);
   } catch (error) {
-    console.error(
-      "[/api/auth/guest] Error occurred:",
-      error
-    );
+    console.error("[/api/auth/guest] Error occurred for redirectUrl:", redirectUrl, error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
