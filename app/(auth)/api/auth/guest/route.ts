@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { isDevelopmentEnvironment } from "@/lib/constants";
@@ -12,7 +13,7 @@ export async function GET(request: Request) {
       return NextResponse.json(
         { error: "Server misconfiguration" },
         { status: 500 }
-      );
+      ); look
     }
 
     const token = await getToken({
