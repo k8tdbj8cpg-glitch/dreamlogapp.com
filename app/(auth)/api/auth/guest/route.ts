@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { signIn } from "@/app/(auth)/auth";
 import { isDevelopmentEnvironment } from "@/lib/constants";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const redirectUrl = searchParams.get("redirectUrl") || "/";
+    const _redirectUrl = searchParams.get("redirectUrl") || "/";
 
+    // Validate Environment Variables
     if (!process.env.AUTH_SECRET) {
       console.error("[/api/auth/guest] AUTH_SECRET is not set");
       return NextResponse.json(
@@ -22,17 +24,18 @@ export async function GET(request: Request) {
     });
 
     if (token) {
-      return NextResponse.redirect(new URL(redirectUrl, request.url));
+      console.log(
+        "[/api/auth/guest] User already authenticated, redirecting..."
+      );
+      return NextResponse.redirect(new URL("/", request.url));
     }
 
-    const signInUrl = new URL("/api/auth/signin/guest", request.url);
-    signInUrl.searchParams.set("callbackUrl", redirectUrl);
-
-    return NextResponse.redirect(signInUrl);
+    console.log("[/api/auth/guest] Attempting guest sign-in...");
+    return await signIn("guest", { redirect: true, redirectTo: "/login" }); // Updated alignment with `authConfig`
   } catch (error) {
     console.error(
       "[/api/auth/guest] Error occurred:",
-      error
+      (error as Error).message
     );
     return NextResponse.json(
       { error: "Internal server error" },
