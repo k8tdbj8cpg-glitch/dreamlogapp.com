@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error(
       "[/api/auth/guest] Error occurred:",
-      error
+      error instanceof Error ? error.stack : error
     );
     return NextResponse.json(
       { error: "Internal server error" },
