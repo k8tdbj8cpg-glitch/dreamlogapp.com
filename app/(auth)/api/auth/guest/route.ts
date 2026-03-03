@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+
 import { signIn } from "@/app/(auth)/auth";
 import { NextResponse } from "next/server";
 
