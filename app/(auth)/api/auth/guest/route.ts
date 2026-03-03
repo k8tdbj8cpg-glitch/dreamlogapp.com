@@ -1,5 +1,5 @@
 
-import { signIn } from "@/app/(auth)/auth";
+import { signIn } from "@/app/(auth
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
