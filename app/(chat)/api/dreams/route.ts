@@ -63,20 +63,28 @@ export async function POST(request: Request) {
 
   const badgesAwarded: string[] = [];
   if (streak.totalEntries === 1) {
-    await awardBadge({ userId: session.user.id, badgeType: "first_dream" });
-    badgesAwarded.push("first_dream");
+    const result = await awardBadge({ userId: session.user.id, badgeType: "first_dream" });
+    if (result.isNew) {
+      badgesAwarded.push("first_dream");
+    }
   }
   if (body.isLucid) {
-    await awardBadge({ userId: session.user.id, badgeType: "lucid_dreamer" });
-    badgesAwarded.push("lucid_dreamer");
+    const result = await awardBadge({ userId: session.user.id, badgeType: "lucid_dreamer" });
+    if (result.isNew) {
+      badgesAwarded.push("lucid_dreamer");
+    }
   }
   if (streak.currentStreak >= 7) {
-    await awardBadge({ userId: session.user.id, badgeType: "week_streak" });
-    badgesAwarded.push("week_streak");
+    const result = await awardBadge({ userId: session.user.id, badgeType: "week_streak" });
+    if (result.isNew) {
+      badgesAwarded.push("week_streak");
+    }
   }
   if (streak.currentStreak >= 30) {
-    await awardBadge({ userId: session.user.id, badgeType: "month_streak" });
-    badgesAwarded.push("month_streak");
+    const result = await awardBadge({ userId: session.user.id, badgeType: "month_streak" });
+    if (result.isNew) {
+      badgesAwarded.push("month_streak");
+    }
   }
 
   return Response.json(

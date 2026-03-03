@@ -875,7 +875,7 @@ export async function awardBadge({
       );
 
     if (existing.length > 0) {
-      return existing[0];
+      return { badge: existing[0], isNew: false };
     }
 
     const [badge] = await db
@@ -883,7 +883,7 @@ export async function awardBadge({
       .values({ userId, badgeType, earnedAt: new Date() })
       .returning();
 
-    return badge;
+    return { badge, isNew: true };
   } catch (_error) {
     throw new ChatbotError("bad_request:database", "Failed to award badge");
   }

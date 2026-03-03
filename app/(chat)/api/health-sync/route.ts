@@ -58,16 +58,22 @@ export async function POST(request: Request) {
   // Award milestone badges
   const badgesAwarded: string[] = [];
   if (streak.totalEntries === 1) {
-    await awardBadge({ userId: session.user.id, badgeType: "first_sync" });
-    badgesAwarded.push("first_sync");
+    const result = await awardBadge({ userId: session.user.id, badgeType: "first_sync" });
+    if (result.isNew) {
+      badgesAwarded.push("first_sync");
+    }
   }
   if (streak.currentStreak >= 7) {
-    await awardBadge({ userId: session.user.id, badgeType: "week_streak" });
-    badgesAwarded.push("week_streak");
+    const result = await awardBadge({ userId: session.user.id, badgeType: "week_streak" });
+    if (result.isNew) {
+      badgesAwarded.push("week_streak");
+    }
   }
   if (streak.currentStreak >= 30) {
-    await awardBadge({ userId: session.user.id, badgeType: "month_streak" });
-    badgesAwarded.push("month_streak");
+    const result = await awardBadge({ userId: session.user.id, badgeType: "month_streak" });
+    if (result.isNew) {
+      badgesAwarded.push("month_streak");
+    }
   }
 
   return Response.json(
