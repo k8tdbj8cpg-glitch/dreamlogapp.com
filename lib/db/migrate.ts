@@ -10,10 +10,10 @@ config({
 const runMigrate = async () => {
   if (!process.env.POSTGRES_URL) {
     console.error(
-      "❌ POSTGRES_URL environment variable is not set. Database migrations cannot run without a valid connection string.",
+      "❌ POSTGRES_URL environment variable is not set. Database migrations cannot run without a valid connection string."
     );
     console.error(
-      "   Set POSTGRES_URL in your environment variables (e.g. Vercel project settings) and redeploy.",
+      "   Set POSTGRES_URL in your environment variables (e.g. Vercel project settings) and redeploy."
     );
     process.exit(1);
   }
