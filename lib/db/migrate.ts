@@ -7,22 +7,31 @@ config({
   path: ".env.local",
 });
 
-const runMigrate = async () => {
+const runMigrate = async () => {  
   if (!process.env.POSTGRES_URL) {
-    console.log("⏭️  POSTGRES_URL not defined, skipping migrations");
-    process.exit(0);
+  console.error("❌ POSTGRES_URL environment variable is missing.");
+  console.error("Cannot run without a valid connection string.");
+  console.error("Set POSTGRES_URL in your environment settings and redeploy.");
+  process.exit(1);
+}
+  console.log("⏳ Running migrations...");
+  try {
+    const dbUrl = new URL(process.env.POSTGRES_URL);
+    dbUrl.username = "<redacted>";
+    dbUrl.password = "<redacted>";
+    console.log("   Connecting to database:", dbUrl.toString());
+  } catch {
+    console.log("   Connecting to database: <unparseable URL>");
   }
 
   const connection = postgres(process.env.POSTGRES_URL, { max: 1 });
   const db = drizzle(connection);
 
-  console.log("⏳ Running migrations...");
-
   const start = Date.now();
   await migrate(db, { migrationsFolder: "./lib/db/migrations" });
   const end = Date.now();
 
-  console.log("✅ Migrations completed in", end - start, "ms");
+  console.log("✅ Migrations completed successfully in", end - start, "ms");
   process.exit(0);
 };
 
