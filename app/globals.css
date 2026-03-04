@@ -1,4 +1,4 @@
-@import "tailwindwindcss";@import "tailwindcss";
+@import "tailwindcss";
 @import "katex/dist/katex.min.css";
 
 /* include utility classes in streamdown */
