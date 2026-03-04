@@ -1,14 +1,16 @@
 {
-  "private": true,
-  "license": "UNLICENSED",
+  "name": "dreamlogapp",
+  "version": "1.0.0",
+  "description": "A simple logging application",
+  "main": "index.js",
   "scripts": {
-    // existing scripts
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    // existing dependencies
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/k8tdbj8cpg-glitch/dreamlogapp.com.git"
   },
-  "devDependencies": {
-    // existing devDependencies
-  },
-  "packageManager": "npm@6"
+  "author": "Your Name",
+  "license": "UNLICENSED",
+  "private": true
 }
