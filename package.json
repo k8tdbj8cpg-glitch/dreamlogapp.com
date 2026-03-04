@@ -1,1 +1,14 @@
-{"name": "dreamlogapp.com", "version": "1.0.0", "private": true, "license": "UNLICENSED", "dependencies": {}}
+{
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    // existing scripts
+  },
+  "dependencies": {
+    // existing dependencies
+  },
+  "devDependencies": {
+    // existing devDependencies
+  },
+  "packageManager": "npm@6"
+}
