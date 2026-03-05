@@ -13,4 +13,6 @@
   "author": "Your Name",
   "license": "UNLICENSED",
   "private": true
-}
+"dependencies": {
+  "next": "^16.0.11"
+},
