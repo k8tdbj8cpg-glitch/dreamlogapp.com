@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { UpgradeButton } from "./upgrade-button";
 
 export const Greeting = () => {
   return (
@@ -33,6 +34,15 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
       >
         Describe a dream to explore, journal, or uncover its meaning.
+      </motion.div>
+      <motion.div
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-6"
+        exit={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 10 }}
+        transition={{ delay: 0.7 }}
+      >
+        <UpgradeButton />
       </motion.div>
     </div>
   );
