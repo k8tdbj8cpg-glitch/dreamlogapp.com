@@ -12,7 +12,7 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin") ?? "";
   const successUrl = `${origin}/payment/success`;
-  const cancelUrl = origin ? origin : "/";
+  const cancelUrl = origin || "/";
 
   try {
     const checkoutSession = await stripe.checkout.sessions.create({
