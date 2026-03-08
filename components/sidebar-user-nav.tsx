@@ -28,6 +28,36 @@ export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, resolvedTheme } = useTheme();
 
   const isGuest = guestRegex.test(data?.user?.email ?? "");
+  const isPremium = data?.user?.type === "premium";
+
+  const handleUpgrade = async () => {
+    try {
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+      });
+      if (!response.ok) {
+        toast({
+          type: "error",
+          description: "Failed to start checkout. Please try again.",
+        });
+        return;
+      }
+      const body = await response.json();
+      if (body.url) {
+        window.location.href = body.url;
+      } else {
+        toast({
+          type: "error",
+          description: "Failed to start checkout. Please try again.",
+        });
+      }
+    } catch (_) {
+      toast({
+        type: "error",
+        description: "Failed to start checkout. Please try again.",
+      });
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -79,6 +109,20 @@ export function SidebarUserNav({ user }: { user: User }) {
             >
               {`Toggle ${resolvedTheme === "light" ? "dark" : "light"} mode`}
             </DropdownMenuItem>
+            {!isGuest && !isPremium && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild data-testid="user-nav-item-upgrade">
+                  <button
+                    className="w-full cursor-pointer"
+                    onClick={handleUpgrade}
+                    type="button"
+                  >
+                    Upgrade to Premium
+                  </button>
+                </DropdownMenuItem>
+              </>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild data-testid="user-nav-item-auth">
               <button
