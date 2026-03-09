@@ -17,7 +17,8 @@ export type Surface =
   | "vote"
   | "document"
   | "suggestions"
-  | "activate_gateway";
+  | "activate_gateway"
+  | "checkout";
 
 export type ErrorCode = `${ErrorType}:${Surface}`;
 
@@ -35,6 +36,7 @@ export const visibilityBySurface: Record<Surface, ErrorVisibility> = {
   document: "response",
   suggestions: "response",
   activate_gateway: "response",
+  checkout: "response",
 };
 
 export class ChatbotError extends Error {
@@ -109,6 +111,11 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
       return "You need to sign in to access health data. Please sign in and try again.";
     case "bad_request:health":
       return "The health data request was invalid. Please check your input and try again.";
+
+    case "unauthorized:checkout":
+      return "You need to sign in to upgrade to Premium. Please sign in and try again.";
+    case "bad_request:checkout":
+      return "The checkout request could not be processed. Please try again.";
 
     case "not_found:document":
       return "The requested document was not found. Please check the document ID and try again.";
