@@ -28,6 +28,7 @@ export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, resolvedTheme } = useTheme();
 
   const isGuest = guestRegex.test(data?.user?.email ?? "");
+  const isPremium = data?.user?.type === "premium";
 
   return (
     <SidebarMenu>
@@ -79,6 +80,20 @@ export function SidebarUserNav({ user }: { user: User }) {
             >
               {`Toggle ${resolvedTheme === "light" ? "dark" : "light"} mode`}
             </DropdownMenuItem>
+            {!isPremium && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild data-testid="user-nav-item-upgrade">
+                  <button
+                    className="w-full cursor-pointer"
+                    onClick={() => router.push("/upgrade")}
+                    type="button"
+                  >
+                    Upgrade to Premium
+                  </button>
+                </DropdownMenuItem>
+              </>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild data-testid="user-nav-item-auth">
               <button
