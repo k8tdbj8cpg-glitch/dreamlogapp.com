@@ -81,50 +81,20 @@ export function SidebarUserNav({ user }: { user: User }) {
               {`Toggle ${resolvedTheme === "light" ? "dark" : "light"} mode`}
             </DropdownMenuItem>
             {!isPremium && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild data-testid="user-nav-item-upgrade">
-                  <button
-                    className="w-full cursor-pointer"
-                    onClick={() => router.push("/upgrade")}
-                    type="button"
-                  >
-                    Upgrade to Premium
-                  </button>
-                </DropdownMenuItem>
-              </>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild data-testid="user-nav-item-auth">
-              <button
-                className="w-full cursor-pointer"
-                onClick={() => {
-                  if (status === "loading") {
-                    toast({
-                      type: "error",
-                      description:
-                        "Checking authentication status, please try again!",
-                    });
-
-                    return;
-                  }
-
-                  if (isGuest) {
-                    router.push("/login");
-                  } else {
-                    signOut({
-                      redirectTo: "/",
-                    });
-                  }
-                }}
-                type="button"
-              >
-                {isGuest ? "Login to your account" : "Sign out"}
-              </button>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
-}
+  <>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem asChild>
+      <button
+        onClick={async () => {
+          const res = await fetch('/api/checkout', { method: 'POST' });
+          const { url } = await res.json();
+          if (url) window.location.href = url;
+        }}
+        type="button"
+        className="w-full text-left px-4 py-2 hover:bg-zinc-800 rounded text-white flex items-center gap-2 cursor-pointer"
+      >
+        ⭐ Upgrade to Premium
+      </button>
+    </DropdownMenuItem>
+  </>
+)}
