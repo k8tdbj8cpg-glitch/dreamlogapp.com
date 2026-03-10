@@ -6,7 +6,7 @@ import { DUMMY_PASSWORD } from "@/lib/constants";
 import { createGuestUser, getUser } from "@/lib/db/queries";
 import { authConfig } from "./auth.config";
 
-export type UserType = "guest" | "regular";
+export type UserType = "guest" | "regular" | "premium";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -17,8 +17,8 @@ declare module "next-auth" {
   }
 
   interface User {
-    id?: string;
     email?: string | null;
+    id?: string;
     type: UserType;
   }
 }
@@ -37,6 +37,7 @@ export const {
   signOut,
 } = NextAuth({
   ...authConfig,
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       credentials: {},
@@ -61,7 +62,10 @@ export const {
           return null;
         }
 
-        return { ...user, type: "regular" };
+        return {
+          ...user,
+          type: user.isPremium ? "premium" : "regular",
+        };
       },
     }),
     Credentials({

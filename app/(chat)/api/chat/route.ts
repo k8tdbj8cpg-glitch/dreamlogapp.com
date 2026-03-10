@@ -14,6 +14,7 @@ import { entitlementsByUserType } from "@/lib/ai/entitlements";
 import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
 import { getLanguageModel } from "@/lib/ai/providers";
 import { createDocument } from "@/lib/ai/tools/create-document";
+import { getSleepCharts } from "@/lib/ai/tools/get-sleep-charts";
 import { getWeather } from "@/lib/ai/tools/get-weather";
 import { getLucidDreamExercise } from "@/lib/ai/tools/lucid-dream-exercise";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
@@ -25,6 +26,7 @@ import {
   getChatById,
   getMessageCountByUserId,
   getMessagesByChatId,
+  getMostRecentHealthSleepRecord,
   saveChat,
   saveMessages,
   updateChatTitleById,
@@ -109,11 +111,16 @@ export async function POST(request: Request) {
 
     const { longitude, latitude, city, country } = geolocation(request);
 
+    const recentSleepRecord = await getMostRecentHealthSleepRecord({
+      userId: session.user.id,
+    }).catch(() => null);
+
     const requestHints: RequestHints = {
       longitude,
       latitude,
       city,
       country,
+      recentSleepRecord,
     };
 
     if (message?.role === "user") {
@@ -149,6 +156,7 @@ export async function POST(request: Request) {
             ? []
             : [
                 "getWeather",
+                "getSleepCharts",
                 "createDocument",
                 "updateDocument",
                 "requestSuggestions",
@@ -163,6 +171,7 @@ export async function POST(request: Request) {
             : undefined,
           tools: {
             getWeather,
+            getSleepCharts,
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({ session, dataStream }),

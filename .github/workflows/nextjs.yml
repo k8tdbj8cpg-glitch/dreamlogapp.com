@@ -1,0 +1,54 @@
+# Build verification workflow for dreamlogapp.com.
+# This project is deployed via Vercel; this workflow only verifies that the
+# Next.js app compiles successfully in CI using pnpm.
+name: Build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Next.js build check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Restore Next.js cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Next.js app
+        # Run next build directly to skip the DB migration step (lib/db/migrate)
+        # which requires a live database. Vercel handles migrations on deployment.
+        run: pnpm exec next build
+        env:
+          # Stub values so the build compiler does not error on missing env vars.
+          # No real database connection is made during a Next.js build (dynamic
+          # routes are not pre-rendered at build time).
+          POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/dreamlogapp
+          AUTH_SECRET: ci-build-placeholder-not-used-at-runtime
+          BLOB_READ_WRITE_TOKEN: vercel_blob_rw_placeholder
+          REDIS_URL: redis://localhost:6379
+          STRIPE_SECRET_KEY: sk_test_placeholder

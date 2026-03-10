@@ -2,6 +2,7 @@ import type { UserType } from "@/app/(auth)/auth";
 
 type Entitlements = {
   maxMessagesPerDay: number;
+  canUseEncryption: boolean;
 };
 
 export const entitlementsByUserType: Record<UserType, Entitlements> = {
@@ -10,6 +11,7 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
    */
   guest: {
     maxMessagesPerDay: 20,
+    canUseEncryption: false,
   },
 
   /*
@@ -17,9 +19,14 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
    */
   regular: {
     maxMessagesPerDay: 50,
+    canUseEncryption: false,
   },
 
   /*
-   * TODO: For users with an account and a paid membership
+   * For users with an account and a paid membership (U.S. only)
    */
+  premium: {
+    maxMessagesPerDay: 200,
+    canUseEncryption: true,
+  },
 };
