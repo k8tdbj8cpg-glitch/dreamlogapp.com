@@ -23,7 +23,7 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
       >
-        Your AI-powered dream journal
+        🌙 Welcome to Dream Log!
       </motion.div>
       <motion.div
         animate={{ opacity: 1, y: 0 }}
@@ -32,7 +32,7 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.6 }}
       >
-        Describe a dream to explore, journal, or uncover its meaning.
+        Log your dreams, track your sleep, and explore your inner world.
       </motion.div>
     </div>
   );

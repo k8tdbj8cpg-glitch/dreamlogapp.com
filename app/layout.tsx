@@ -11,9 +11,9 @@ import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dreamlogapp.com"),
-  title: "DreamLog — AI Dream Journal",
+  title: "Dream Log — Sleep & Dream Journal",
   description:
-    "Record, explore, and understand your dreams with the help of AI. DreamLog is your personal AI-powered dream journal.",
+    "Log your dreams, track your sleep with Apple Watch and wearables, and explore lucid dreaming.",
 };
 
 export const viewport = {
