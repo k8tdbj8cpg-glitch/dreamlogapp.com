@@ -51,3 +51,4 @@ jobs:
           AUTH_SECRET: ci-build-placeholder-not-used-at-runtime
           BLOB_READ_WRITE_TOKEN: vercel_blob_rw_placeholder
           REDIS_URL: redis://localhost:6379
+          STRIPE_SECRET_KEY: sk_test_placeholder
