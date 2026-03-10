@@ -37,11 +37,11 @@ type Props = {
 };
 
 function avgSleepHours(records: SleepData[]): string {
-  if (records.length === 0) return "—";
+  if (records.length === 0) { return "—"; }
   const total = records.reduce((sum, r) => {
     const mins =
       (new Date(r.sleepEnd).getTime() - new Date(r.sleepStart).getTime()) /
-      60000;
+      60_000;
     return sum + mins;
   }, 0);
   const avgMins = total / records.length;
@@ -50,7 +50,7 @@ function avgSleepHours(records: SleepData[]): string {
 
 function avgQuality(records: SleepData[]): string {
   const scored = records.filter((r) => r.qualityScore !== null && r.qualityScore !== undefined);
-  if (scored.length === 0) return "—";
+  if (scored.length === 0) { return "—"; }
   const avg =
     scored.reduce((s, r) => s + (r.qualityScore as number), 0) / scored.length;
   return avg.toFixed(1);
@@ -105,7 +105,7 @@ export function DreamDashboard({ sleepData, dreamEntries, streak, badges }: Prop
                   const start = new Date(record.sleepStart);
                   const durationMins =
                     (new Date(record.sleepEnd).getTime() - start.getTime()) /
-                    60000;
+                    60_000;
                   return (
                     <tr
                       className="border-t border-zinc-200 dark:border-zinc-800"

@@ -435,11 +435,11 @@ function PureMultimodalInput({
           />
           <Button
             aria-label={
-              !speechSupported
-                ? "Voice input not supported in this browser"
-                : isRecording
+              speechSupported
+                ? isRecording
                   ? "Stop recording"
                   : "Start voice input"
+                : "Voice input not supported in this browser"
             }
             className={cn(
               "absolute top-1 right-1 size-7 rounded-full p-1 transition-colors",
@@ -453,11 +453,11 @@ function PureMultimodalInput({
               toggleRecording();
             }}
             title={
-              !speechSupported
-                ? "Voice input not supported in this browser"
-                : isRecording
+              speechSupported
+                ? isRecording
                   ? "Stop recording"
                   : "Start voice input"
+                : "Voice input not supported in this browser"
             }
             type="button"
             variant="ghost"

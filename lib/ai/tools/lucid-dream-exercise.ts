@@ -79,7 +79,7 @@ export const getLucidDreamExercise = tool({
         "Optional: name of a specific technique (e.g. 'Hand Check', 'WILD', 'MILD')."
       ),
   }),
-  execute: async ({ type, specific }) => {
+  execute: ({ type, specific }) => {
     const allExercises = [
       ...REALITY_CHECKS.map((e) => ({ ...e, category: "reality_check" as const })),
       ...DREAM_JOURNAL_RITUALS.map((e) => ({
