@@ -88,7 +88,7 @@ function PureMultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<InstanceType<typeof SpeechRecognition> | null>(null);
   const [speechSupported, setSpeechSupported] = useState(false);
 
   useEffect(() => {
