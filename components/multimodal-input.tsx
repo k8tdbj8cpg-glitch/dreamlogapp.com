@@ -3,7 +3,7 @@
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import equal from "fast-deep-equal";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, MicIcon } from "lucide-react";
 import {
   type ChangeEvent,
   type Dispatch,
@@ -86,6 +86,18 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const [speechSupported, setSpeechSupported] = useState(false);
+
+  useEffect(() => {
+    setSpeechSupported(
+      !!(
+        (window as typeof window & { SpeechRecognition?: unknown }).SpeechRecognition ||
+        (window as typeof window & { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
+      )
+    );
+  }, []);
 
   const adjustHeight = useCallback(() => {
     if (textareaRef.current) {
@@ -295,6 +307,51 @@ function PureMultimodalInput({
     return () => textarea.removeEventListener("paste", handlePaste);
   }, [handlePaste]);
 
+  const toggleRecording = useCallback(() => {
+    if (!speechSupported) {
+      return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    const SpeechRecognitionAPI =
+      (window as typeof window & { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition ||
+      (window as typeof window & { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0].transcript)
+        .join(" ");
+      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      if (event.error !== "aborted") {
+        toast.error("Voice input error. Please try again.");
+      }
+      setIsRecording(false);
+      recognitionRef.current = null;
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      recognitionRef.current = null;
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsRecording(true);
+  }, [isRecording, speechSupported, setInput]);
+
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
       {messages.length === 0 &&
@@ -363,9 +420,9 @@ function PureMultimodalInput({
             ))}
           </div>
         )}
-        <div className="flex flex-row items-start gap-1 sm:gap-2">
+        <div className="relative flex flex-row items-start gap-1 sm:gap-2">
           <PromptInputTextarea
-            className="grow resize-none border-0! border-none! bg-transparent p-2 text-base outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
+            className="grow resize-none border-0! border-none! bg-transparent p-2 pr-9 text-base outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
             data-testid="multimodal-input"
             disableAutoResize={true}
             maxHeight={200}
@@ -376,6 +433,37 @@ function PureMultimodalInput({
             rows={1}
             value={input}
           />
+          <Button
+            aria-label={
+              !speechSupported
+                ? "Voice input not supported in this browser"
+                : isRecording
+                  ? "Stop recording"
+                  : "Start voice input"
+            }
+            className={cn(
+              "absolute top-1 right-1 size-7 rounded-full p-1 transition-colors",
+              isRecording
+                ? "bg-red-500 text-white hover:bg-red-600"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground"
+            )}
+            disabled={!speechSupported}
+            onClick={(event) => {
+              event.preventDefault();
+              toggleRecording();
+            }}
+            title={
+              !speechSupported
+                ? "Voice input not supported in this browser"
+                : isRecording
+                  ? "Stop recording"
+                  : "Start voice input"
+            }
+            type="button"
+            variant="ghost"
+          >
+            <MicIcon size={14} />
+          </Button>
         </div>
         <PromptInputToolbar className="border-top-0! border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">
           <PromptInputTools className="gap-0 sm:gap-0.5">
