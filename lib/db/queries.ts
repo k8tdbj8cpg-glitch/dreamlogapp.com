@@ -736,6 +736,7 @@ export async function getHealthSleepRecordsByUserId({
   }
 }
 
+export async function saveDreamEntry({
   userId,
   title,
   content,
