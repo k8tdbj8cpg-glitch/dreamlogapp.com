@@ -92,19 +92,28 @@ export type QueueItemDescriptionProps = ComponentProps<"div"> & {
 export const QueueItemDescription = ({
   completed = false,
   className,
+  children,
   ...props
-}: QueueItemDescriptionProps) => (
-  <div
-    className={cn(
-      "ml-6 text-xs",
-      completed
-        ? "text-muted-foreground/40 line-through"
-        : "text-muted-foreground",
-      className
-    )}
-    {...props}
-  />
-);
+}: QueueItemDescriptionProps) => {
+  if (!children) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn(
+        "ml-6 text-xs",
+        completed
+          ? "text-muted-foreground/40 line-through"
+          : "text-muted-foreground",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
 export type QueueItemActionsProps = ComponentProps<"div">;
 

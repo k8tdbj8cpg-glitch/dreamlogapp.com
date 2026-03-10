@@ -15,6 +15,7 @@ type SuggestedActionsProps = {
 
 function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
   const suggestedActions = [
+    "Show my sleep analytics charts",
     "I had a vivid dream last night — help me log it",
     "Teach me a reality check technique for lucid dreaming",
     "Analyze my recent sleep patterns and give me tips",
