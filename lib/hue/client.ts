@@ -1,71 +1,61 @@
-import axios from "axios";
-import { HueLight, HueLightState, HueLightUpdate } from "./types";
+'use server';
 
-const HUE_BRIDGE_IP = process.env.HUE_BRIDGE_IP;
-const HUE_API_KEY = process.env.HUE_API_KEY;
+import type { HueLight, HueLightUpdate } from './types';
 
-if (!HUE_BRIDGE_IP || !HUE_API_KEY) {
-    throw new Error("Environment variables HUE_BRIDGE_IP and HUE_API_KEY must be set");
+const BRIDGE_IP = process.env.HUE_BRIDGE_IP!;
+const API_KEY = process.env.HUE_API_KEY!;
+
+const BASE_URL = `http://${BRIDGE_IP}/api/${API_KEY}`;
+
+if (!BRIDGE_IP || !API_KEY) {
+  throw new Error('Missing HUE_BRIDGE_IP or HUE_API_KEY in .env');
 }
 
-/**
- * List all available lights connected to the Philips Hue Bridge.
- * @returns Array of HueLight objects or an error object.
- */
-export async function listLights(): Promise<HueLight[] | { error: string }> {
-    try {
-        const response = await axios.get(`http://${HUE_BRIDGE_IP}/api/${HUE_API_KEY}/lights`);
-        const lights: HueLight[] = Object.entries(response.data).map(([id, light]: [string, any]) => ({
-            id,
-            name: light.name,
-            state: {
-                on: light.state.on,
-                brightness: light.state.bri,
-                hue: light.state.hue,
-                saturation: light.state.sat,
-            },
-        }));
-        return lights;
-    } catch (error: any) {
-        return { error: error.message || "Failed to fetch lights" };
-    }
+export async function listLights(): Promise<HueLight[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/lights`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    const data = await res.json();
+    return Object.entries(data).map(([id, light]: [string, any]) => ({
+      id,
+      name: light.name,
+      state: light.state,
+    }));
+  } catch (error) {
+    console.error('Hue listLights error:', error);
+    return [];
+  }
 }
 
-/**
- * Get detailed information about a specific light by ID.
- * @param id ID of the light to retrieve.
- * @returns A HueLight object or an error object.
- */
-export async function getLightById(id: string): Promise<HueLight | { error: string }> {
-    try {
-        const response = await axios.get(`http://${HUE_BRIDGE_IP}/api/${HUE_API_KEY}/lights/${id}`);
-        const light = response.data;
-        return {
-            id,
-            name: light.name,
-            state: {
-                on: light.state.on,
-                brightness: light.state.bri,
-                hue: light.state.hue,
-                saturation: light.state.sat,
-            },
-        };
-    } catch (error: any) {
-        return { error: error.message || `Failed to fetch light with ID ${id}` };
-    }
+export async function getLightById(id: string): Promise<HueLight | null> {
+  try {
+    const res = await fetch(`${BASE_URL}/lights/${id}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    
+    const light = await res.json();
+    return { id, name: light.name, state: light.state };
+  } catch (error) {
+    console.error(`Hue getLightById(${id}) error:`, error);
+    return null;
+  }
 }
 
-/**
- * Update the state of a specific light by ID.
- * @param id ID of the light to update.
- * @param state Partial state updates for the light.
- * @returns The updated state or an error object.
- */
-export async function setLightState(id: string, state: HueLightUpdate): Promise<{ success: boolean } | { error: string }> {
-    try {
-        await axios.put(`http://${HUE_BRIDGE_IP}/api/${HUE_API_KEY}/lights/${id}/state`, state);
-        return { success: true };
-    } catch (error: any) {
-        return { error: error.message || `Failed to update light with ID ${id}` };
+export async function setLightState(id: string, update: HueLightUpdate): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch(`${BASE_URL}/lights/${id}/state`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(update),
+    });
+
+    const data = await res.json();
+    if (Array.isArray(data) && data[0]?.error) {
+      return { success: false, error: data[0].error.description };
     }
+    return { success: true };
+  } catch (error) {
+    console.error('Hue setLightState error:', error);
+    return { success: false, error: 'Failed to communicate with Hue bridge' };
+  }
 }
