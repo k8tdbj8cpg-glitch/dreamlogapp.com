@@ -7,7 +7,7 @@ let stripeClient: Stripe | null = null;
 
 function getStripe(): Stripe {
   if (!stripeClient) {
-    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
       apiVersion: '2026-02-25.clover',
     });
   }
@@ -17,7 +17,7 @@ function getStripe(): Stripe {
 export async function POST(request: Request) {
   try {
     const stripe = getStripe();
-    const body = await request.json().catch(() => ({}));
+    const _body = await request.json().catch(() => ({}));
     const priceId = process.env.STRIPE_FLAT_RATE_PRICE_ID;
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',

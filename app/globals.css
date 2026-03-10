@@ -52,13 +52,13 @@
 
 /* define design tokens (dark mode) */
 .dark {
-  --background: hsl(250 25% 7%);
+  --background: #0d0d1a;
   --foreground: hsl(250 15% 96%);
-  --card: hsl(250 25% 9%);
+  --card: #161630;
   --card-foreground: hsl(250 15% 96%);
-  --popover: hsl(250 25% 9%);
+  --popover: #161630;
   --popover-foreground: hsl(250 15% 96%);
-  --primary: hsl(262 80% 65%);
+  --primary: #a78bfa;
   --primary-foreground: hsl(250 25% 7%);
   --secondary: hsl(250 20% 16%);
   --secondary-foreground: hsl(250 15% 96%);
@@ -70,26 +70,26 @@
   --destructive-foreground: hsl(0 0% 98%);
   --border: hsl(250 20% 18%);
   --input: hsl(250 20% 18%);
-  --ring: hsl(262 80% 65%);
-  --chart-1: hsl(262 80% 65%);
+  --ring: #a78bfa;
+  --chart-1: #a78bfa;
   --chart-2: hsl(210 80% 60%);
   --chart-3: hsl(170 60% 50%);
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(340 80% 65%);
-  --sidebar-background: hsl(250 25% 8%);
+  --sidebar-background: #0d0d1a;
   --sidebar-foreground: hsl(250 15% 90%);
-  --sidebar-primary: hsl(262 80% 65%);
+  --sidebar-primary: #a78bfa;
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(262 50% 22%);
-  --sidebar-accent-foreground: hsl(262 80% 82%);
+  --sidebar-accent: #6d4fac;
+  --sidebar-accent-foreground: hsl(0 0% 100%);
   --sidebar-border: hsl(250 20% 18%);
-  --sidebar-ring: hsl(262 80% 65%);
-  --sidebar: hsl(250 25% 8%);
+  --sidebar-ring: #a78bfa;
+  --sidebar: #0d0d1a;
 }
 
 /* define theme */
 @theme {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: "DM Sans", var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
 
   --breakpoint-toast-mobile: 600px;
@@ -315,4 +315,26 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Nav pill styles for sidebar menu buttons */
+.dark [data-sidebar="menu-button"] {
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark [data-sidebar="menu-button"]:hover {
+  background-color: rgba(109, 79, 172, 0.3);
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.dark [data-sidebar="menu-button"]:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
+.dark [data-sidebar="menu-button"][data-active="true"] {
+  background-color: #6d4fac;
+  color: #ffffff;
+  border-color: transparent;
 }

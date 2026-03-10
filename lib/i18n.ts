@@ -156,7 +156,7 @@ export function t(key: TranslationKey, locale: Locale = "en"): string {
  * Returns one of the supported locales, defaulting to "en".
  */
 export function detectLocale(acceptLanguage?: string | null): Locale {
-  if (!acceptLanguage) return "en";
+  if (!acceptLanguage) { return "en"; }
 
   const supported: Locale[] = ["en", "es", "fr", "de", "ja", "zh"];
   const candidates = acceptLanguage
