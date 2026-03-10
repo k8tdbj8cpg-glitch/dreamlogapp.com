@@ -24,6 +24,8 @@ import {
   type DBMessage,
   document,
   dreamEntry,
+  type HealthSleepRecord,
+  healthSleepRecord,
   message,
   type Suggestion,
   stream,
@@ -43,7 +45,7 @@ import { generateHashedPassword } from "./utils";
 // https://authjs.dev/reference/adapter/drizzle
 
 // biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
+const client = postgres(process.env.POSTGRES_URL_NON_POOLING!);
 const db = drizzle(client);
 
 export async function getUser(email: string): Promise<User[]> {
@@ -645,6 +647,51 @@ export async function saveSleepData({
   }
 }
 
+export async function saveHealthSleepRecord({
+  userId,
+  source,
+  sleepStart,
+  sleepEnd,
+  sleepDurationMinutes,
+  sleepQuality,
+  heartRateAvgBpm,
+  heartRateMinBpm,
+  heartRateMaxBpm,
+}: {
+  userId: string;
+  source: "apple_health" | "apple_watch" | "manual";
+  sleepStart: Date;
+  sleepEnd: Date;
+  sleepDurationMinutes?: number;
+  sleepQuality?: number;
+  heartRateAvgBpm?: number;
+  heartRateMinBpm?: number;
+  heartRateMaxBpm?: number;
+}) {
+  try {
+    return await db
+      .insert(healthSleepRecord)
+      .values({
+        userId,
+        source,
+        sleepStart,
+        sleepEnd,
+        sleepDurationMinutes,
+        sleepQuality,
+        heartRateAvgBpm,
+        heartRateMinBpm,
+        heartRateMaxBpm,
+        createdAt: new Date(),
+      })
+      .returning();
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to save health sleep record"
+    );
+  }
+}
+
 export async function getSleepDataByUserId({
   userId,
   limit = 30,
@@ -663,6 +710,28 @@ export async function getSleepDataByUserId({
     throw new ChatbotError(
       "bad_request:database",
       "Failed to get sleep data by user id"
+    );
+  }
+}
+
+export async function getHealthSleepRecordsByUserId({
+  userId,
+  limit = 30,
+}: {
+  userId: string;
+  limit?: number;
+}): Promise<HealthSleepRecord[]> {
+  try {
+    return await db
+      .select()
+      .from(healthSleepRecord)
+      .where(eq(healthSleepRecord.userId, userId))
+      .orderBy(desc(healthSleepRecord.sleepStart))
+      .limit(limit);
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get health sleep records by user id"
     );
   }
 }
@@ -885,5 +954,26 @@ export async function awardBadge({
     return { badge, isNew: true };
   } catch (_error) {
     throw new ChatbotError("bad_request:database", "Failed to award badge");
+  }
+}
+
+export async function getMostRecentHealthSleepRecord({
+  userId,
+}: {
+  userId: string;
+}): Promise<HealthSleepRecord | null> {
+  try {
+    const [record] = await db
+      .select()
+      .from(healthSleepRecord)
+      .where(eq(healthSleepRecord.userId, userId))
+      .orderBy(desc(healthSleepRecord.sleepStart))
+      .limit(1);
+    return record ?? null;
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get most recent health sleep record"
+    );
   }
 }
