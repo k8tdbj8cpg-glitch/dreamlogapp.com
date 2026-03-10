@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const priceId = process.env.STRIPE_FLAT_PRICE_ID;
+    const priceId = process.env.STRIPE_FLAT_RATE_PRICE_ID;
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
