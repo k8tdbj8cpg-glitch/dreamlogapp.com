@@ -25,6 +25,7 @@ import {
   getChatById,
   getMessageCountByUserId,
   getMessagesByChatId,
+  getMostRecentHealthSleepRecord,
   saveChat,
   saveMessages,
   updateChatTitleById,
@@ -109,11 +110,16 @@ export async function POST(request: Request) {
 
     const { longitude, latitude, city, country } = geolocation(request);
 
+    const recentSleepRecord = await getMostRecentHealthSleepRecord({
+      userId: session.user.id,
+    }).catch(() => null);
+
     const requestHints: RequestHints = {
       longitude,
       latitude,
       city,
       country,
+      recentSleepRecord,
     };
 
     if (message?.role === "user") {

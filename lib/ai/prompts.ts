@@ -1,5 +1,6 @@
 import type { Geo } from "@vercel/functions";
 import type { ArtifactKind } from "@/components/artifact";
+import type { HealthSleepRecord } from "@/lib/db/schema";
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -37,26 +38,60 @@ Do not update document right after creating it. Wait for user feedback or reques
 - Never use for general questions or information requests
 `;
 
-export const regularPrompt = `You are a friendly assistant for a dream and sleep log app! Keep your responses concise and helpful.
+export const regularPrompt = `You are DreamLog AI, a thoughtful assistant specializing in dream journaling and interpretation. Help users record, explore, and understand their dreams.
+You can display interactive sleep analytics charts using the `getSleepCharts` tool when users ask about their sleep data.
 
-When asked to write, create, or help with something, just do it directly. Don't ask clarifying questions unless absolutely necessary - make reasonable assumptions and proceed with the task.
+When a user describes a dream:
+1. Acknowledge the imagery and emotions present.
+2. Offer possible symbolic interpretations grounded in common dream analysis.
+3. Gently invite the user to reflect on how the dream relates to their waking life.
 
-You can display interactive sleep analytics charts using the \`getSleepCharts\` tool. When users ask to see their sleep data, patterns, or analytics, use sample or provided data to render a pie chart (sleep quality distribution) and a bar chart (nightly sleep duration). Generate realistic sample data spanning the last 7-30 days if the user hasn't provided specific entries.`;
+Keep responses warm, curious, and concise. Avoid overly clinical language. If the user wants to simply journal without analysis, support that too.
+
+When asked to write, create, or help with something outside dream journaling, just do it directly without unnecessary clarifying questions.`;
 
 export type RequestHints = {
   latitude: Geo["latitude"];
   longitude: Geo["longitude"];
   city: Geo["city"];
   country: Geo["country"];
+  recentSleepRecord?: HealthSleepRecord | null;
 };
 
-export const getRequestPromptFromHints = (requestHints: RequestHints) => `\
+export const getRequestPromptFromHints = (requestHints: RequestHints) => {
+  const locationPart = `\
 About the origin of user's request:
 - lat: ${requestHints.latitude}
 - lon: ${requestHints.longitude}
 - city: ${requestHints.city}
-- country: ${requestHints.country}
-`;
+- country: ${requestHints.country}`;
+
+  if (!requestHints.recentSleepRecord) {
+    return locationPart;
+  }
+
+  const s = requestHints.recentSleepRecord;
+  const durationHours = s.sleepDurationMinutes
+    ? `${Math.floor(s.sleepDurationMinutes / 60)}h ${s.sleepDurationMinutes % 60}m`
+    : "unknown";
+  const qualityStr =
+    s.sleepQuality != null ? `${s.sleepQuality}/100` : "unknown";
+  const hrStr =
+    s.heartRateAvgBpm != null
+      ? `avg ${s.heartRateAvgBpm} bpm (min ${s.heartRateMinBpm ?? "?"}, max ${s.heartRateMaxBpm ?? "?"})`
+      : "unknown";
+
+  const sleepPart = `\
+User's most recent sleep data (from ${s.source.replace("_", " ")}):
+- Sleep period: ${s.sleepStart.toISOString()} to ${s.sleepEnd.toISOString()}
+- Duration: ${durationHours}
+- Sleep quality score: ${qualityStr}
+- Heart rate during sleep: ${hrStr}
+
+Use this health context to enrich your dream analysis when the user discusses their dreams.`;
+
+  return `${locationPart}\n\n${sleepPart}`;
+};
 
 export const systemPrompt = ({
   selectedChatModel,
