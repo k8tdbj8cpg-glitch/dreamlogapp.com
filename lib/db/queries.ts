@@ -753,8 +753,7 @@ export async function getDreamEntryByShareToken({
   }
 }
 
-export async function getOrCreateUserStreak({
-  userId,
+ export async function getOrCreateUserStreak({ userId,
 }: {
   userId: string;
 }): Promise<UserStreak> {
