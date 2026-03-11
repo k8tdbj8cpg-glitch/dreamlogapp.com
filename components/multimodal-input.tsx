@@ -46,7 +46,7 @@ import { PreviewAttachment } from "./preview-attachment";
 import { SuggestedActions } from "./suggested-actions";
 import { Button } from "./ui/button";
 import type { VisibilityType } from "./visibility-selector";
-declare var SpeechRecognition: any;
+declare var SpeechRecognition: any;type SpeechRecognitionErrorEvent = any;
 declare var webkitSpeechRecognition: any;
 type SpeechRecognitionEvent = any;
 function setCookie(name: string, value: string) {
