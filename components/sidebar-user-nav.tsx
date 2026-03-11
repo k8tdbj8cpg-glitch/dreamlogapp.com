@@ -1,6 +1,7 @@
 "use client";
 
 import type { User } from "next-auth";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ChevronUp } from "lucide-react";
@@ -66,6 +67,14 @@ export function SidebarUserNav({ user }: { user: User }) {
             className="w-[--radix-popper-anchor-width]"
             side="top"
           >
+            {user.type === "guest" && (
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => signIn()}
+              >
+                Sign In
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               className="cursor-pointer"
               disabled={isUpgrading}

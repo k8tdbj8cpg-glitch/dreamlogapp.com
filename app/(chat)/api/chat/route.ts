@@ -24,6 +24,7 @@ import {
   createStreamId,
   deleteChatById,
   getChatById,
+  getDreamEntriesByUserId,
   getMessageCountByUserId,
   getMessagesByChatId,
   getMostRecentHealthSleepRecord,
@@ -111,9 +112,14 @@ export async function POST(request: Request) {
 
     const { longitude, latitude, city, country } = geolocation(request);
 
-    const recentSleepRecord = await getMostRecentHealthSleepRecord({
-      userId: session.user.id,
-    }).catch(() => null);
+    const [recentSleepRecord, recentDreams] = await Promise.all([
+      getMostRecentHealthSleepRecord({
+        userId: session.user.id,
+      }).catch(() => null),
+      getDreamEntriesByUserId({ userId: session.user.id, limit: 10 }).catch(
+        () => []
+      ),
+    ]);
 
     const requestHints: RequestHints = {
       longitude,
@@ -149,7 +155,7 @@ export async function POST(request: Request) {
       execute: async ({ writer: dataStream }) => {
         const result = streamText({
           model: getLanguageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          system: systemPrompt({ selectedChatModel, requestHints, recentDreams }),
           messages: modelMessages,
           stopWhen: stepCountIs(5),
           experimental_activeTools: isReasoningModel

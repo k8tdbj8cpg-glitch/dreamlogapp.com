@@ -1,6 +1,6 @@
 import type { Geo } from "@vercel/functions";
 import type { ArtifactKind } from "@/components/artifact";
-import type { HealthSleepRecord } from "@/lib/db/schema";
+import type { DreamEntry, HealthSleepRecord } from "@/lib/db/schema";
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -53,7 +53,9 @@ When asked to write, create, or help with something, just do it directly. Don't 
 
 For dream interpretation, be empathetic and curious. Explore symbolism, emotions, and recurring themes. Offer insights while reminding users that dream interpretation is personal and subjective.
 
-When users want to log a dream, help them structure it clearly with: title, narrative content, emotions/mood, notable symbols, and whether it was a lucid dream.`;
+When users want to log a dream, help them structure it clearly with: title, narrative content, emotions/mood, notable symbols, and whether it was a lucid dream.
+
+IMPORTANT: Never use createDocument or updateDocument for dream journal entries or dream-related conversations. All dream logging interactions must be conversational and kept in the chat. Do not generate artifact or document-style responses in this context.`;
 
 export type RequestHints = {
   latitude: Geo["latitude"];
@@ -101,21 +103,35 @@ Use this health context to enrich your dream analysis when the user discusses th
 export const systemPrompt = ({
   selectedChatModel,
   requestHints,
+  recentDreams,
 }: {
   selectedChatModel: string;
   requestHints: RequestHints;
+  recentDreams?: Pick<DreamEntry, "title" | "content" | "createdAt">[];
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
+
+  const dreamMemoryPrompt =
+    recentDreams && recentDreams.length > 0
+      ? `\n\nUser's recent dream journal entries (most recent first):\n${recentDreams
+          .map(
+            (d, i) =>
+              `${i + 1}. [${d.createdAt.toLocaleDateString()}] ${d.title}: ${d.content}`
+          )
+          .join(
+            "\n"
+          )}\n\nUse these past dream entries to provide context-aware and coherent responses.`
+      : "";
 
   // reasoning models don't need artifacts prompt (they can't use tools)
   if (
     selectedChatModel.includes("reasoning") ||
     selectedChatModel.includes("thinking")
   ) {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${regularPrompt}${dreamMemoryPrompt}\n\n${requestPrompt}`;
   }
 
-  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+  return `${regularPrompt}${dreamMemoryPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
 };
 
 export const codePrompt = `
