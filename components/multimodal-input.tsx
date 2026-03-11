@@ -331,7 +331,7 @@ function PureMultimodalInput({
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript = Array.from(event.results)
-        .map((result) => result[0].transcript)
+        .map((result: any) => (result as any)[0].transcript)
         .join(" ");
       setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
     };
