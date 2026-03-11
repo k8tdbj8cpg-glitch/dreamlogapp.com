@@ -30,8 +30,10 @@ export default async function DashboardPage() {
   }
 
   const [sleepData, dreamEntries, streak, badges] = await Promise.all([
-    getSleepDataByUserId({ userId: session.user.id, limit: 14 }),
-    getDreamEntriesByUserId({ userId: session.user.id, limit: 30 }),
+    getSleepDataByUserId({ userId: session.user.id, limit: 14 }).catch(() => []),
+    getDreamEntriesByUserId({ userId: session.user.id, limit: 30 }).catch(
+      () => [],
+    ),
     getOrCreateUserStreak({ userId: session.user.id }).catch(() => ({
       ...DEFAULT_STREAK,
       userId: session.user.id,
