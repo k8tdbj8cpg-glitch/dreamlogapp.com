@@ -14,7 +14,13 @@ export const metadata: Metadata = {
   title: "Dream Log — Sleep & Dream Journal",
   description:
     "Log your dreams, track your sleep with Apple Watch and wearables, and explore lucid dreaming.",
-};
+  manifest: '/manifest.json',
+  themeColor: '#4B0082',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Dream Log',
+  },};
 
 export const viewport = {
   maximumScale: 1, // Disable auto-zoom on mobile Safari
