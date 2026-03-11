@@ -8,6 +8,16 @@ import {
   getUserBadges,
 } from "@/lib/db/queries";
 
+const DEFAULT_STREAK = {
+  id: "",
+  userId: "",
+  currentStreak: 0,
+  longestStreak: 0,
+  lastLogDate: null,
+  totalEntries: 0,
+  updatedAt: new Date(),
+};
+
 export const metadata = {
   title: "Dashboard | Dream Log",
   description: "Your sleep and dream analytics dashboard",
@@ -22,8 +32,11 @@ export default async function DashboardPage() {
   const [sleepData, dreamEntries, streak, badges] = await Promise.all([
     getSleepDataByUserId({ userId: session.user.id, limit: 14 }),
     getDreamEntriesByUserId({ userId: session.user.id, limit: 30 }),
-    getOrCreateUserStreak({ userId: session.user.id }),
-    getUserBadges({ userId: session.user.id }),
+    getOrCreateUserStreak({ userId: session.user.id }).catch(() => ({
+      ...DEFAULT_STREAK,
+      userId: session.user.id,
+    })),
+    getUserBadges({ userId: session.user.id }).catch(() => []),
   ]);
 
   return (
