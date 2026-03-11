@@ -106,7 +106,9 @@ export const getLucidDreamExercise = tool({
         ? allExercises
         : allExercises.filter((e) => e.category === type);
 
-    if (pool.length === 0) pool = allExercises;
+    if (pool.length === 0) {
+      pool = allExercises;
+    }
 
     const exercise = pool[Math.floor(Math.random() * pool.length)];
 
