@@ -876,9 +876,7 @@ export async function updateUserStreak({
     let newCurrent = streak.currentStreak;
     const newTotal = streak.totalEntries + 1;
 
-    if (!lastLog) {
-      newCurrent = 1;
-    } else {
+    if (lastLog) {
       const diffDays = Math.round(
         (today.getTime() - lastLog.getTime()) / (1000 * 60 * 60 * 24)
       );
@@ -887,6 +885,8 @@ export async function updateUserStreak({
       } else if (diffDays > 1) {
         newCurrent = 1;
       }
+    } else {
+      newCurrent = 1;
     }
 
     const newLongest = Math.max(newCurrent, streak.longestStreak);
