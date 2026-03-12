@@ -721,7 +721,22 @@ export const PromptInput = ({
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
+      // === 5-DREAM FREE LIMIT (protects Premium $11.99) ===
+  const isPremium = typeof window !== "undefined" 
+    ? localStorage.getItem('isPremium') === 'true' 
+    : false;
 
+  if (!isPremium) {
+    const currentCount = parseInt(localStorage.getItem('dreamsLogged') || '0');
+    if (currentCount >= 5) {
+      alert("🌙 You've hit the free limit of 5 dreams this month!\n\nUpgrade to Premium for unlimited logging, Claude Opus 4.5, full analytics & exports.");
+      window.location.href = '/pricing';
+      return;
+    }
+  }
+  // ================================================
+  // ================================================
+  // ================================================
     const form = event.currentTarget;
     const text = usingProvider
       ? controller.textInput.value
