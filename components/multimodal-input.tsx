@@ -575,7 +575,30 @@ function PureModelSelectorCompact({
     xai: "xAI",
     reasoning: "Reasoning",
   };
+  // === PREMIUM MODEL GATE (free = Gemini only) ===
+  const isPremium = typeof window !== "undefined" 
+    ? localStorage.getItem('isPremium') === 'true' 
+    : false;
 
+  if (!isPremium) {
+    return (
+      <div className="p-6 text-center border border-dashed border-gray-700 rounded-2xl bg-zinc-950">
+        <div className="mx-auto w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
+          🔒
+        </div>
+        <div className="text-lg font-medium text-white mb-1">Gemini 2.5 Flash Lite</div>
+        <div className="text-xs text-gray-400 mb-6">Free tier only</div>
+        
+        <button
+          onClick={() => window.location.href = '/pricing'}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition"
+        >
+          Upgrade to Premium — Unlock Claude Opus 4.5 +
+        </button>
+      </div>
+    );
+  }
+  // ================================================
   return (
     <ModelSelector onOpenChange={setOpen} open={open}>
       <ModelSelectorTrigger asChild>
