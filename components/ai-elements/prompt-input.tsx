@@ -721,7 +721,22 @@ export const PromptInput = ({
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
+      // === 5-DREAM FREE LIMIT (protects Premium $11.99) ===
+  const isPremium = typeof window !== "undefined" 
+    ? localStorage.getItem('isPremium') === 'true' 
+    : false;
 
+  if (!isPremium) {
+    const currentCount = parseInt(localStorage.getItem('dreamsLogged') || '0');
+    if (currentCount >= 5) {
+      alert("🌙 You've hit the free limit of 5 dreams this month!\n\nUpgrade to Premium for unlimited logging, Claude Opus 4.5, full analytics & exports.");
+      window.location.href = '/pricing';
+      return;
+    }
+  }
+  // ================================================
+  // ================================================
+  // ================================================
     const form = event.currentTarget;
     const text = usingProvider
       ? controller.textInput.value
@@ -732,7 +747,11 @@ export const PromptInput = ({
 
     // Reset form immediately after capturing text to avoid race condition
     // where user input during async blob conversion would be lost
-    if (!usingProvider) {
+    if (!usingProvider) {  // === BUMP DREAM COUNT ON SUCCESS ===
+  if (!isPremium) {
+    const currentCount = parseInt(localStorage.getItem('dreamsLogged') || '0');
+    localStorage.setItem('dreamsLogged', (currentCount + 1).toString());
+  }
       form.reset();
     }
 
@@ -1218,9 +1237,18 @@ export const PromptInputSpeechButton = ({
         className
       )}
       disabled={!recognition}
-      onClick={toggleListening}
+
       {...props}
-    >
+onClick={() => {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return alert("Voice not supported on this device");
+  const recognition = new SpeechRecognition();
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    controller.setText(transcript);
+  };
+  recognition.start();
+}}
       <MicIcon className="size-4" />
     </PromptInputButton>
   );
