@@ -20,11 +20,9 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'default',
     title: 'Dream Log',
-  <script
-        dangerouslySetInnerHTML={{
-          __html: "if ('serviceWorker' in navigator) { window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); }); }",
-        }}
-      />,},
+  },
+};
+
 
 export const viewport = {
   maximumScale: 1, // Disable auto-zoom on mobile Safari
