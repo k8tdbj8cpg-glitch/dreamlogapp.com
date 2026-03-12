@@ -1234,21 +1234,11 @@ export const PromptInputSpeechButton = ({
       className={cn(
         "relative transition-all duration-200",
         isListening && "animate-pulse bg-accent text-accent-foreground",
-        className
-      )}
-      disabled={!recognition}
-
-      {...props}
-onClick={() => {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) return alert("Voice not supported on this device");
-  const recognition = new SpeechRecognition();
-  recognition.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    controller.setText(transcript);
-  };
-  recognition.start();
-}}
+        )}
+        disabled={!recognition}
+        onClick={handleVoiceInput}
+        {...props}
+      >
       <MicIcon className="size-4" />
     </PromptInputButton>
   );
