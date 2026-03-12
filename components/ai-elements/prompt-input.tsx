@@ -1237,9 +1237,18 @@ export const PromptInputSpeechButton = ({
         className
       )}
       disabled={!recognition}
-      onClick={toggleListening}
+
       {...props}
-    >
+onClick={() => {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return alert("Voice not supported on this device");
+  const recognition = new SpeechRecognition();
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    controller.setText(transcript);
+  };
+  recognition.start();
+}}
       <MicIcon className="size-4" />
     </PromptInputButton>
   );
