@@ -747,7 +747,11 @@ export const PromptInput = ({
 
     // Reset form immediately after capturing text to avoid race condition
     // where user input during async blob conversion would be lost
-    if (!usingProvider) {
+    if (!usingProvider) {  // === BUMP DREAM COUNT ON SUCCESS ===
+  if (!isPremium) {
+    const currentCount = parseInt(localStorage.getItem('dreamsLogged') || '0');
+    localStorage.setItem('dreamsLogged', (currentCount + 1).toString());
+  }
       form.reset();
     }
 
