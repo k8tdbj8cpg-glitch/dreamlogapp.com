@@ -167,6 +167,21 @@ export function sanitizeText(text: string) {
   return text.replace('<has_function_call>', '');
 }
 
+export function sanitizeUrl(url: string | undefined): string | undefined {
+  if (!url) {
+    return undefined;
+  }
+  try {
+    const { protocol } = new URL(url);
+    if (protocol === 'http:' || protocol === 'https:') {
+      return url;
+    }
+  } catch {
+    // Invalid URL
+  }
+  return undefined;
+}
+
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
   return messages.map((message) => ({
     id: message.id,
