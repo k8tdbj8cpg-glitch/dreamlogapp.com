@@ -177,7 +177,7 @@ export async function POST(request: Request) {
             : undefined,
           tools: {
             getWeather,
-            getSleepCharts,
+            getSleepCharts: getSleepCharts({ session }),
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({ session, dataStream }),
