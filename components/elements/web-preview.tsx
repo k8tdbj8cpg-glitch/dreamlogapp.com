@@ -16,7 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn, sanitizeUrl } from "@/lib/utils";
 
 export type WebPreviewContextValue = {
   url: string;
@@ -171,7 +171,7 @@ export const WebPreviewBody = ({
       <iframe
         className={cn("size-full", className)}
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
-        src={(src ?? url) || undefined}
+        src={sanitizeUrl(src ?? url)}
         title="Preview"
         {...props}
       />
